@@ -1,19 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, Loader2, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner"
 import Navbar from "@/components/Navbar/Navbar";
+import { useAxios } from "@/hooks/use-Axios";
+
+interface PredictionResponse {
+  prediction: string;
+  recommendation: string;
+}
 
 const DiseasePrediction = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<{
     disease: string;
     recommendations: string;
   } | null>(null);
-//   const { toast } = useToast();
+
+  const {
+    data: predictionData,
+    error: predictionError,
+    loaded: predictionLoaded,
+    callAPI: callPredictionAPI,
+  } = useAxios<PredictionResponse>();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -25,6 +39,7 @@ const DiseasePrediction = () => {
         return;
       }
       
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result as string);
@@ -37,19 +52,39 @@ const DiseasePrediction = () => {
   const handlePredict = async () => {
     if (!selectedImage) return;
 
+    setError(null);
     setIsLoading(true);
-    
-    // Simulating API call - replace with actual API integration
-    setTimeout(() => {
-      setPrediction({
-        disease: "Late Blight (Phytophthora infestans)",
-        recommendations: "Late blight is a serious fungal disease that affects tomato and potato plants. Immediate action is recommended to prevent spread. Remove and destroy all infected plant material immediately. Apply copper-based fungicides or other approved treatments every 7-10 days. Ensure proper air circulation by spacing plants adequately. Avoid overhead watering and water early in the day to allow foliage to dry. Monitor surrounding plants closely for signs of infection. Consider resistant varieties for future plantings. In severe cases, consult with local agricultural extension services for targeted treatment plans.",
+
+    const URL = process.env.NEXT_PUBLIC_DISEASE_PREDICTION_URL;
+    try{
+      if(!URL) {
+        toast.error("Disease Prediction API is not defined");
+        setIsLoading(false);
+        return;
+      } 
+      if (!imageFile) {
+        toast.error("No image file selected");
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", imageFile);
+
+      const response = await callPredictionAPI(URL, "POST", formData, {
+        "Content-Type": "multipart/form-data",
       });
+
+      // useAxios hook sets data, error, and loaded state. We can react to it.
+      // This part of the logic will be handled by a useEffect hook watching predictionData and predictionError.
+
+    }
+    catch(err) {
+      toast.error("Something went wrong");
+      setError("An unexpected error occurred during prediction.");
+    } finally {
       setIsLoading(false);
-      toast.success("Prediction Complete", {
-        description: "Disease analysis has been completed successfully.",
-      })
-    }, 2000);
+    }
   };
 
   const handleDiscardImage = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -58,9 +93,28 @@ const DiseasePrediction = () => {
     e.stopPropagation();
 
     setSelectedImage(null);
+    setImageFile(null);
     setPrediction(null);
+    setError(null);
     (document.getElementById('image-upload') as HTMLInputElement).value = '';
   };
+
+  useEffect(() => {
+    if (predictionLoaded) {
+      setIsLoading(false);
+      if (predictionData) {
+        setPrediction({
+          disease: predictionData.prediction,
+          recommendations: predictionData.recommendation,
+        });
+        toast.success("Prediction Complete");
+      } else if (predictionError) {
+        setError(predictionError);
+        toast.error("Prediction Failed", { description: predictionError });
+      }
+    }
+  }, [predictionLoaded, predictionData, predictionError]);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -135,7 +189,7 @@ const DiseasePrediction = () => {
             <Card className="p-6 shadow-medium">
               <h2 className="mb-4 text-xl font-semibold text-foreground">Results</h2>
               
-              {prediction ? (
+              {isLoading === false && prediction ? (
                 <div className="space-y-4 animate-fade-in">
                   <div className="rounded-lg bg-blue-50/50 p-4 border">
                     <div className="flex items-start gap-3">
@@ -156,11 +210,25 @@ const DiseasePrediction = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed border-border bg-muted/30">
-                  <p className="text-center text-sm text-muted-foreground">
-                    Upload an image and click predict to see results
-                  </p>
+                <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/30">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <p className="mt-4 text-sm text-muted-foreground">Analyzing your image...</p>
+                    </>
+                  ) : error ? (
+                    <div className="text-center text-destructive">
+                      <AlertCircle className="mx-auto h-8 w-8" />
+                      <p className="mt-4 font-semibold">Prediction Failed</p>
+                      <p className="mt-2 text-sm">{error}</p>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sm text-muted-foreground">
+                      Upload an image and click predict to see results
+                    </p>
+                  )}
                 </div>
+
               )}
             </Card>
           </div>

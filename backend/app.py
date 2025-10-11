@@ -132,7 +132,7 @@ async def disease_prediction_endpoint(file: UploadFile = File(...)):
         if "Error:" in predicted_disease:
              raise HTTPException(status_code=400, detail=predicted_disease)
 
-        return {'prediction': predicted_disease}
+        return {'prediction': predicted_disease, 'recommendation': "Test"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
