@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sun, Cloud, CloudRain, CloudSnow, CloudFog, CloudLightning, Droplets, Wind } from 'lucide-react';
 
-// NOTE: Using the actual Redux hooks provided.
 import { useAppSelector } from '@/store/hooks';
 import { selectUserProfile } from '@/store/features/userSlice';
 
