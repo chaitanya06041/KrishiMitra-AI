@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { MapPin, Sprout, Navigation, Search } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
+import { useDispatch, useSelector } from 'react-redux'; // <-- 1. Import hooks
+import { updateUserProfile, selectUserProfile } from '@/store/features/userSlice'; // <-- 2. Import action and selector
+import { toast } from "sonner";
 
 interface ProfileSetupProps {
   onComplete: () => void;
@@ -39,6 +42,9 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const supabase = createClient();
+  const userProfile = useSelector(selectUserProfile);
+  const dispatch = useDispatch();
 
   const filteredCrops = CROP_OPTIONS.filter(crop =>
     crop.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,35 +81,46 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
   };
 
   const handleSave = async () => {
+    if (!userProfile) {
+      console.error("No user found to update profile.");
+      onComplete(); // Exit gracefully
+      return;
+    }
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const updates = {
+        location: location || null,
+        crop_planted: cropPlanted || null,
+        updated_at: new Date().toISOString(), // Supabase can also handle this with a trigger
+      };
 
-      if (user) {
-        const { error } = await supabase
-          .from('user_profiles')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            location: location || null,
-            crop_planted: cropPlanted || null,
-            updated_at: new Date().toISOString(),
-          });
+      // Step 1: Update the user's profile in the database
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('user_id', userProfile.user_id); // Match the row by user ID
 
-        if (error) throw error;
-      }
+      if (error) throw error;
+      
+      // Step 2: Dispatch the updated details to the Redux store
+      dispatch(updateUserProfile({
+        location: updates.location,
+        crop_planted: updates.crop_planted,
+      }));
 
       onComplete();
+
     } catch (error) {
       console.error('Error saving profile:', error);
-      onComplete();
+      // Still call onComplete to close the modal even if there's an error
+      onComplete(); 
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl max-w-md w-full p-8 animate-fadeInUp">
         <h2 className="text-3xl font-bold mb-2">Complete Your Profile</h2>
         <p className="text-gray-600 mb-8">Help us personalize your experience</p>

@@ -1,30 +1,89 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, AlertCircle } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { createClient } from '@/lib/supabase/client';
+import { selectUserProfile, updateUserProfile } from '@/store/features/userSlice';
+import type { UserProfile } from '@/store/features/userSlice';
+import { toast } from "sonner";
 
 interface EditProfileDialogProps {
   onClose: () => void;
 }
 
 const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
-  const user =  {
-      id: '1',
-      name: 'Demo User',
-      email: 'tempmail@gmail.com',
-      cropPlanted: 'Rice',
-      location: 'Maharashtra',
-      weatherAlerts: true,
-    };
+  // 1. Connect to Redux
+  const dispatch = useDispatch();
+  const userProfile = useSelector(selectUserProfile);
+
+  // 2. Local state for the form, initialized from Redux store
   const [formData, setFormData] = useState({
-    cropPlanted: user?.cropPlanted || '',
-    location: user?.location || '',
-    weatherAlerts: user?.weatherAlerts || false,
+    crop_planted: '',
+    location: '',
+    weather_alerts: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Local state for UI feedback
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // 3. Populate form when the component mounts with data from Redux
+  useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        crop_planted: userProfile.crop_planted || '',
+        location: userProfile.location || '',
+        weather_alerts: userProfile.weather_alerts || false,
+      });
+    }
+  }, [userProfile]); // This effect runs when userProfile is loaded
+
+  // Supabase client instance
+  const supabase = createClient();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // updateProfile(formData);
-    onClose();
+    if (!userProfile) {
+      setError("User not found. Please log in again.");
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Step 1: Update the data in the Supabase 'profiles' table
+      const { data, error: dbError } = await supabase
+        .from('profiles')
+        .update({
+          crop_planted: formData.crop_planted,
+          location: formData.location,
+          weather_alerts: formData.weather_alerts,
+        })
+        .eq('user_id', userProfile.user_id) // Ensure we only update the correct user
+        .select() // Return the updated row
+        .single();
+
+      if (dbError) throw dbError;
+
+      // Step 2: Dispatch the action to update the Redux state
+      // We use the data returned from Supabase to ensure consistency
+      dispatch(updateUserProfile(data));
+        toast.success("Profile Updated Successfully!");
+      // Step 3: Close the dialog on success
+      onClose();
+
+    } catch (err: any) {
+      console.error("Failed to update profile:", err);
+      setError(err.message || 'Could not save your changes.');
+    } finally {
+      setLoading(false);
+    }
   };
+  
+  // If for some reason the dialog is rendered without a logged-in user, show nothing.
+  if (!userProfile) {
+      return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -40,14 +99,15 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Using snake_case to match the database and Redux state */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Crop Planted
             </label>
             <input
               type="text"
-              value={formData.cropPlanted}
-              onChange={(e) => setFormData({ ...formData, cropPlanted: e.target.value })}
+              value={formData.crop_planted}
+              onChange={(e) => setFormData({ ...formData, crop_planted: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="e.g., Rice, Wheat, Cotton"
             />
@@ -70,14 +130,21 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
             <input
               type="checkbox"
               id="weatherAlerts"
-              checked={formData.weatherAlerts}
-              onChange={(e) => setFormData({ ...formData, weatherAlerts: e.target.checked })}
+              checked={formData.weather_alerts}
+              onChange={(e) => setFormData({ ...formData, weather_alerts: e.target.checked })}
               className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
             />
             <label htmlFor="weatherAlerts" className="ml-2 text-sm text-gray-700">
               Want to get weather alerts?
             </label>
           </div>
+          
+          {error && (
+            <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              {error}
+            </div>
+          )}
 
           <div className="flex space-x-3 pt-4">
             <button
@@ -89,9 +156,10 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              disabled={loading}
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Save Changes
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

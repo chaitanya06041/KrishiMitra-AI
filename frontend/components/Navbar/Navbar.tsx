@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Changed from useLocation
+import { usePathname, useRouter } from "next/navigation"; // Changed from useLocation
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,9 +17,17 @@ import { Bell, LogOut, Settings, Sprout, Menu } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import EditProfileDialog from "./EditProfileDialog";
+import { createClient } from "@/lib/supabase/client";
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUserProfile, clearUser } from '@/store/features/userSlice';
 
 const Navbar = () => {
   const pathname = usePathname(); // Changed from useLocation
+  const router = useRouter();
+  const supabase = createClient();
+  const dispatch = useDispatch();
+  const userProfile = useSelector(selectUserProfile);
+
   const [notifications] = useState([
     {
       id: 1,
@@ -40,15 +48,20 @@ const Navbar = () => {
       unread: false,
     },
   ]);
-  const [showProfile, setShowProfile] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   // Logic remains the same, just uses the 'pathname' from usePathname
   const isActive = (path: string) => pathname === path;
 
-  const handleLogout = () => {
-    toast.success("Logged out successfully");
-    // Add logout logic here (e.g., redirect, clear session)
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(`Logout failed: ${error.message}`);
+    } else {
+      dispatch(clearUser());
+      toast.success("Logged out successfully");
+      router.push("/");
+    }
   };
 
   return (
@@ -173,17 +186,17 @@ const Navbar = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
               {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop"
-                        alt="Profile"
-                      />
-                      <AvatarFallback>KM</AvatarFallback>
+                      {userProfile?.profile_image_url && (
+                        <AvatarImage src={userProfile.profile_image_url} alt="Profile" />
+                      )}
+                      <AvatarFallback className="bg-black text-white">
+                        {userProfile?.email?.[0].toUpperCase() || 'U'}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -196,7 +209,6 @@ const Navbar = () => {
                       <button
                         onClick={() => {
                           setShowEditProfile(true);
-                          setShowProfile(false);
                         }}
                         className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
                       >

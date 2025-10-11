@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Sprout, Bot, Image as ImageIcon, TrendingUp, MapPin, Sparkles } from 'lucide-react';
 import Login from '@/components/landing-page/Login';
 import Signup from '@/components/landing-page/Signup';
-import ProfileSetup from '@/components/landing-page/ProfileSetup';
-import { supabase } from '@/lib/supabase';
-
+import ProfileSetup from '@/components/landing-page/ProfileSetup';import { createClient } from '@/lib/supabase/client';
+import { toast } from "sonner";
 
 type AuthView = 'none' | 'login' | 'signup' | 'profile-setup';
 
@@ -26,6 +25,7 @@ export default function LandingPage() {
   const [authView, setAuthView] = useState<AuthView>('none');
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Default to false until checked
   const [bubbleStyles, setBubbleStyles] = useState<BubbleStyle[]>([]);
+  const supabase = createClient();
   const router = useRouter();
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function LandingPage() {
     if (isAuthenticated) {
       router.push('/dashboard');
     } else {
-      setAuthView('signup');
+      setAuthView('login');
     }
   };
 
@@ -77,11 +77,13 @@ export default function LandingPage() {
 
   const handleLoginSuccess = () => {
     setAuthView('none');
+    toast.success("Logged in successfully");
     router.push('/dashboard');
   };
 
   const handleProfileComplete = () => {
     setAuthView('none');
+    toast.success("Signed up successfully");
     router.push('/dashboard');
   };
 

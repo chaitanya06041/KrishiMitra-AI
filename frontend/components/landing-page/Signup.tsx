@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { useState } from "react";
+import { Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useDispatch } from "react-redux"; // <-- 1. Import hook
+import { setUser } from "@/store/features/userSlice";
 
 interface SignupProps {
   onSuccess: () => void;
@@ -8,39 +10,65 @@ interface SignupProps {
   onClose: () => void;
 }
 
-export default function Signup({ onSuccess, onSwitchToLogin, onClose }: SignupProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Signup({
+  onSuccess,
+  onSwitchToLogin,
+  onClose,
+}: SignupProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const supabase = createClient();
+  const dispatch = useDispatch();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
+      if (!user) throw new Error("Signup failed, user not created.");
 
+      const newUserProfile = {
+        user_id: user.id,
+        email: user.email!,
+        location: null,
+        crop_planted: null,
+        weather_alerts: false,
+        profile_image_url: null,
+      };
+
+      // const { error: profileError } = await supabase.from("profiles").insert({
+      //   user_id: user.id, // The 'id' in profiles should match the auth user's id
+      //   weather_alerts: false, // Set default value
+      //   // other fields are null by default if not specified
+      // });
+
+      // if (profileError) throw profileError;
+      dispatch(setUser(newUserProfile));
       setSuccess(true);
-      setTimeout(() => {
-        onSuccess();
-      }, 1500);
+
+      onSuccess();
     } catch (err: any) {
-      setError(err.message || 'Failed to create account');
+      setError(err.message || "Failed to create account");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl max-w-md w-full p-8 relative animate-fadeInUp">
         <button
           onClick={onClose}
@@ -65,7 +93,9 @@ export default function Signup({ onSuccess, onSwitchToLogin, onClose }: SignupPr
           <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <p className="text-sm text-green-700">Account created successfully!</p>
+              <p className="text-sm text-green-700">
+                Account created successfully!
+              </p>
             </div>
           </div>
         )}
@@ -112,13 +142,13 @@ export default function Signup({ onSuccess, onSwitchToLogin, onClose }: SignupPr
             disabled={loading || success}
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creating account...' : success ? 'Success!' : 'Sign Up'}
+            {loading ? "Creating account..." : success ? "Success!" : "Sign Up"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <button
               onClick={onSwitchToLogin}
               className="text-green-600 font-semibold hover:text-green-700"
