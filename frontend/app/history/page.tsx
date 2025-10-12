@@ -1,59 +1,127 @@
 'use client'
 import { useEffect, useState } from "react";
-import { Calendar, Trash2, AlertCircle, ChevronDown, X } from "lucide-react";
+import { Calendar, Trash2, AlertCircle, ChevronDown, X, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner"
 import Navbar from "@/components/Navbar/Navbar";
 
+// --- NEW IMPORTS ---
+import { useSelector, useDispatch } from "react-redux";
+import { createClient } from "@/lib/supabase/client";
+import { selectUserProfile } from "@/store/features/userSlice";
+// --------------------
+
+// --- INTERFACE MATCHES SUPABASE TABLE ---
 interface PredictionHistory {
-  id: string;
+  history_id: string;
+  user_id: string;
   disease: string;
-  recommendations: string;
-  imageUrl: string;
-  timestamp: number;
+  recommendation: string;
+  image_url: string;
+  created_at: string; // Supabase timestamp is a string
 }
+// ----------------------------------------
 
 const History = () => {
-  const [history, setHistory] = useState<PredictionHistory[]>([
-    {
-        id: "1",
-      disease: "Sample: Late Blight (Phytophthora infestans)",
-      recommendations:
-        "This is a sample recommendation. Late blight is a serious fungal disease. To manage it, remove and destroy infected plants, apply fungicides, ensure good air circulation, and avoid overhead watering.",
-      imageUrl:
-        "https://www.gardeningknowhow.com/wp-content/uploads/2021/06/tomato-late-blight.jpg",
-      timestamp: Date.now(),
-    }
-  ]);
+  // --- NEW: Supabase client and user from Redux ---
+  const supabase = createClient();
+  const user = useSelector(selectUserProfile)
+  // -------------------------------------------------
+
+  const [history, setHistory] = useState<PredictionHistory[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // To show loading state
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-//   const { toast } = useToast();
 
+  // --- UPDATED: Fetch data from Supabase on component mount ---
   useEffect(() => {
-    const savedHistory = localStorage.getItem("predictionHistory");
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-  }, []);
+    const fetchHistory = async () => {
+      // Don't fetch if the user isn't loaded yet
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+      console.log("user: ", user);
+      
 
-  const handleDelete = (id: string) => {
-    const updatedHistory = history.filter((item) => item.id !== id);
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('history')
+          .select('*')
+          .eq('user_id', user.user_id)
+          .order('created_at', { ascending: false }); // Show newest first
+
+        if (error) throw error;
+        console.log("data: ", data);
+        
+        setHistory(data || []);
+
+      } catch (error) {
+        console.error("Error fetching history:", error);
+        toast.error("Failed to load your prediction history.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [user, supabase]); // Re-fetch if user changes
+  // -------------------------------------------------------------
+
+  // --- UPDATED: Delete a single item from Supabase ---
+  const handleDelete = async (historyId: string) => {
+    // Optimistic UI update for a better user experience
+    const originalHistory = [...history];
+    const updatedHistory = history.filter((item) => item.history_id !== historyId);
     setHistory(updatedHistory);
-    localStorage.setItem("predictionHistory", JSON.stringify(updatedHistory));
-    toast.success("Prediction removed from history");
-  };
 
-  const handleClearAll = () => {
-    setHistory([]);
-    localStorage.removeItem("predictionHistory");
-    toast.success("All prediction history has been cleared");
-  };
+    try {
+      const { error } = await supabase
+        .from('history')
+        .delete()
+        .eq('history_id', historyId);
 
-  const formatDate = (timestamp: number) => {
+      if (error) throw error;
+      
+      toast.success("Prediction removed from history");
+
+    } catch (error) {
+      console.error("Error deleting history item:", error);
+      toast.error("Failed to remove prediction. Please try again.");
+      setHistory(originalHistory); // Revert state on failure
+    }
+  };
+  // -------------------------------------------------------
+
+  // --- UPDATED: Clear all items for the user from Supabase ---
+  const handleClearAll = async () => {
+    if (!user) return; // Should not happen if button is visible, but good practice
+
+    try {
+        const { error } = await supabase
+            .from('history')
+            .delete()
+            .eq('user_id', user.user_id);
+
+        if (error) throw error;
+        
+        setHistory([]); // Clear state on success
+        toast.success("All prediction history has been cleared");
+
+    } catch (error) {
+        console.error("Error clearing history:", error);
+        toast.error("Failed to clear history. Please try again.");
+    }
+  };
+  // -----------------------------------------------------------
+
+  // Now accepts a string (ISO 8601 format from Supabase)
+  const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString("en-IN", { // Changed to en-IN based on your location
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -74,7 +142,7 @@ const History = () => {
                 View all your crop disease predictions
               </p>
             </div>
-            {history.length > 0 && (
+            {history.length > 0 && !isLoading && (
               <Button
                 variant="destructive"
                 onClick={handleClearAll}
@@ -85,8 +153,12 @@ const History = () => {
               </Button>
             )}
           </div>
-
-          {history.length === 0 ? (
+          
+          {isLoading ? (
+            <div className="flex justify-center items-center p-12">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+          ) : history.length === 0 ? (
             <Card className="p-12 text-center shadow-medium">
               <AlertCircle
                 className="mx-auto mb-4 h-16 w-16 text-muted-foreground"
@@ -102,12 +174,13 @@ const History = () => {
           ) : (
             <div className="space-y-4">
               {history.map((item) => (
-                <Card key={item.id} className="overflow-hidden shadow-medium">
+                // --- UPDATED JSX with new property names ---
+                <Card key={item.history_id} className="overflow-hidden shadow-medium">
                   <div className="flex items-start gap-4 p-4">
                     <img
-                      src={item.imageUrl}
+                      src={item.image_url}
                       alt="Crop"
-                      onClick={() => setPreviewImage(item.imageUrl)}
+                      onClick={() => setPreviewImage(item.image_url)}
                       className="h-24 w-24 cursor-pointer rounded-lg object-cover shadow-soft transition-transform hover:scale-105"
                     />
                     
@@ -117,14 +190,14 @@ const History = () => {
                           <h3 className="font-semibold text-foreground">{item.disease}</h3>
                           <p className="text-sm" style={{color: '#527A61'}}>
                             <Calendar className="mr-1 inline h-3 w-3" />
-                            {formatDate(item.timestamp)}
+                            {formatDate(item.created_at)}
                           </p>
                         </div>
                         
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDelete(item.history_id)}
                           className="hover:bg-destructive hover:text-destructive-foreground"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -135,23 +208,23 @@ const History = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                          onClick={() => setExpandedId(expandedId === item.history_id ? null : item.history_id)}
                           className="flex w-full items-center justify-between p-2 text-left hover:bg-green-50/50 cursor-pointer"
                         >
                           <span className="text-sm font-medium">
-                            {expandedId === item.id ? "Hide" : "Show"} Recommendations
+                            {expandedId === item.history_id ? "Hide" : "Show"} Recommendations
                           </span>
                           <ChevronDown
                             className={`h-4 w-4 transition-transform duration-200 ${
-                              expandedId === item.id ? "rotate-180" : ""
+                              expandedId === item.history_id ? "rotate-180" : ""
                             }`}
                           />
                         </Button>
                         
-                        {expandedId === item.id && (
+                        {expandedId === item.history_id && (
                           <div className="mt-2 animate-accordion-down rounded-lg border border-border bg-green-50/50 p-4">
                             <p className="text-sm leading-relaxed text-green-700">
-                              {item.recommendations}
+                              {item.recommendation}
                             </p>
                           </div>
                         )}
@@ -159,6 +232,7 @@ const History = () => {
                     </div>
                   </div>
                 </Card>
+                // ---------------------------------------------
               ))}
             </div>
           )}

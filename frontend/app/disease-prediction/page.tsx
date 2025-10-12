@@ -1,11 +1,20 @@
+// page.tsx
+
 "use client";
 import { useState, useEffect } from "react";
 import { Upload, Loader2, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar/Navbar";
 import { useAxios } from "@/hooks/use-Axios";
+
+// --- NEW IMPORTS ---
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store"; // Adjust this path to your store definition
+import { selectUserProfile } from "@/store/features/userSlice";
+import { createClient } from "@/lib/supabase/client";
+// --------------------
 
 interface PredictionResponse {
   prediction: string;
@@ -22,6 +31,12 @@ const DiseasePrediction = () => {
     recommendations: string;
   } | null>(null);
 
+  // --- NEW: Get user from Redux store ---
+  // const { user } = useSelector((state: RootState) => state.user);
+  const user = useSelector(selectUserProfile)
+  const supabase = createClient();
+  // ---------------------------------------
+
   const {
     data: predictionData,
     error: predictionError,
@@ -35,10 +50,10 @@ const DiseasePrediction = () => {
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File too large", {
           description: "Please upload an image smaller than 5MB.",
-        })
+        });
         return;
       }
-      
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -56,12 +71,12 @@ const DiseasePrediction = () => {
     setIsLoading(true);
 
     const URL = process.env.NEXT_PUBLIC_DISEASE_PREDICTION_URL;
-    try{
-      if(!URL) {
+    try {
+      if (!URL) {
         toast.error("Disease Prediction API is not defined");
         setIsLoading(false);
         return;
-      } 
+      }
       if (!imageFile) {
         toast.error("No image file selected");
         setIsLoading(false);
@@ -71,24 +86,19 @@ const DiseasePrediction = () => {
       const formData = new FormData();
       formData.append("file", imageFile);
 
-      const response = await callPredictionAPI(URL, "POST", formData, {
+      await callPredictionAPI(URL, "POST", formData, {
         "Content-Type": "multipart/form-data",
       });
-
-      // useAxios hook sets data, error, and loaded state. We can react to it.
-      // This part of the logic will be handled by a useEffect hook watching predictionData and predictionError.
-
-    }
-    catch(err) {
+    } catch (err) {
       toast.error("Something went wrong");
       setError("An unexpected error occurred during prediction.");
     } finally {
-      setIsLoading(false);
+      // We no longer set isLoading to false here,
+      // it will be handled in the useEffect after saving the history.
     }
   };
 
   const handleDiscardImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Prevent the label's default file-picker behavior
     e.preventDefault();
     e.stopPropagation();
 
@@ -96,23 +106,88 @@ const DiseasePrediction = () => {
     setImageFile(null);
     setPrediction(null);
     setError(null);
-    (document.getElementById('image-upload') as HTMLInputElement).value = '';
+    (document.getElementById("image-upload") as HTMLInputElement).value = "";
   };
 
-  useEffect(() => {
-    if (predictionLoaded) {
-      setIsLoading(false);
-      if (predictionData) {
-        setPrediction({
-          disease: predictionData.prediction,
-          recommendations: predictionData.recommendation,
-        });
-        toast.success("Prediction Complete");
-      } else if (predictionError) {
-        setError(predictionError);
-        toast.error("Prediction Failed", { description: predictionError });
-      }
+  // --- NEW: Function to save prediction history ---
+  const savePredictionToHistory = async (predictionResult: PredictionResponse) => {
+    // Only proceed if a user is logged in and there's an image file
+    if (!user || !imageFile) {
+      console.log("User not logged in or no image file. Skipping save.");
+      return;
     }
+
+    try {
+      // 1. Upload the image to Supabase Storage
+      // Create a unique file path to avoid name collisions
+      const fileExtension = imageFile.name.split('.').pop();
+      const filePath = `${user.user_id}/${Date.now()}.${fileExtension}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('history_images') // Your bucket name
+        .upload(filePath, imageFile);
+      
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // 2. Get the public URL of the uploaded image
+      const { data: urlData } = supabase.storage
+        .from('history_images')
+        .getPublicUrl(filePath);
+
+      const imageUrl = urlData.publicUrl;
+
+      // 3. Insert the record into the 'history' table
+      const { error: insertError } = await supabase
+        .from('history')
+        .insert({
+          user_id: user.user_id,
+          image_url: imageUrl,
+          disease: predictionResult.prediction,
+          recommendation: predictionResult.recommendation,
+          // created_at is usually handled by the database with a default value
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      console.log("Prediction history saved successfully!");
+
+    } catch (error) {
+      console.error("Error saving prediction history:", error);
+      toast.error("Failed to save history", {
+        description: "Your prediction was successful, but we couldn't save it to your history.",
+      });
+    }
+  };
+  // ----------------------------------------------------
+
+  useEffect(() => {
+    const handlePredictionResult = async () => {
+      if (predictionLoaded) {
+        if (predictionData) {
+          setPrediction({
+            disease: predictionData.prediction,
+            recommendations: predictionData.recommendation,
+          });
+          toast.success("Prediction Complete");
+          
+          // --- NEW: Call the function to save the result ---
+          await savePredictionToHistory(predictionData);
+          // --------------------------------------------------
+
+        } else if (predictionError) {
+          setError(predictionError);
+          toast.error("Prediction Failed", { description: predictionError });
+        }
+        // Finally, set loading to false after everything is done.
+        setIsLoading(false);
+      }
+    };
+  
+    handlePredictionResult();
   }, [predictionLoaded, predictionData, predictionError]);
 
 
