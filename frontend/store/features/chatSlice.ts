@@ -6,6 +6,7 @@ export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  error?: boolean;
 }
 
 // Define the state for this slice

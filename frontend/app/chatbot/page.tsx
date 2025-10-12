@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Navbar from "@/components/Navbar/Navbar";
 import { v4 as uuidv4 } from 'uuid';
-
+import { useAxios } from "@/hooks/use-Axios";
+import { toast } from "sonner"
 
 // --- REDUX IMPORTS ---
 import { useSelector, useDispatch } from "react-redux";
@@ -15,12 +16,17 @@ import { selectSession } from "@/store/features/sessionSlice";
 import { updateSession } from "@/store/features/sessionSlice";
 import type { AppDispatch } from "@/store/store";
 
+interface chatResponse {
+  answer: string;
+}
+
 // The Message interface can now be imported from your chatSlice file
 // to avoid duplication, but leaving it here is also fine.
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  error?: boolean;
 }
 
 const Chatbot = () => {
@@ -36,6 +42,13 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+
+  const {
+      data: chatData,
+      error: chatError,
+      loaded: chatLoaded,
+      callAPI: callChatAPI,
+    } = useAxios<chatResponse>();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -78,18 +91,48 @@ const Chatbot = () => {
     setInput("");
     setIsLoading(true);
 
-    // Simulating AI response - replace with actual API integration
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Thank you for your question about "${userMessage.content}". I'm here to help you with agricultural advice, crop management, disease identification, and farming best practices. While this is a demo response, in production I would provide detailed, expert guidance based on your specific needs.`,
-      };
-      // 4. Dispatch the `addMessage` action for the assistant's response
-      dispatch(addMessage(assistantMessage));
+    const URL = process.env.NEXT_PUBLIC_CHATBOT_URL;
+    try {
+      if (!URL) {
+        toast.error("Chatbot API is not defined");
+        setIsLoading(false);
+        return;
+      }
+      const payload = {
+        message: input.trim(),
+        session_id: sessionId
+      }
+      await callChatAPI(URL, "POST", payload);
+    }
+    catch (err) {
+      toast.error("Something went wrong");
       setIsLoading(false);
-    }, 1000);
+    }
   };
+
+  useEffect(() => {
+    if (chatLoaded) {
+      if (chatError) {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: "Sorry, I'm having trouble connecting. Please try again in a moment.",
+          error: true,
+        };
+        dispatch(addMessage(assistantMessage));
+        setIsLoading(false);
+      }
+      else if (chatData) {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: chatData.answer
+        }
+        dispatch(addMessage(assistantMessage));
+        setIsLoading(false);
+      }
+    }
+  }, [chatLoaded, chatData, chatError])
 
   const handleNewChat = () => {
     // 5. Dispatch the `clearMessages` action to reset the chat
@@ -179,6 +222,8 @@ const Chatbot = () => {
                       className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                         message.role === "user"
                           ? "rounded-tr-xs bg-green-600 text-primary-foreground shadow-soft"
+                          : message.error
+                          ? "bg-red-100 border border-red-400 text-red-700"
                           : "border border-border bg-card text-card-foreground"
                       }`}
                     >
