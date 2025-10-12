@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { MapPin, Sprout, Navigation, Search } from 'lucide-react';
+'use client'
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Sprout, Navigation, Search, User, Camera, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { useDispatch, useSelector } from 'react-redux'; // <-- 1. Import hooks
-import { updateUserProfile, selectUserProfile } from '@/store/features/userSlice'; // <-- 2. Import action and selector
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserProfile, selectUserProfile } from '@/store/features/userSlice';
 import { toast } from "sonner";
 
 interface ProfileSetupProps {
@@ -11,37 +12,27 @@ interface ProfileSetupProps {
 }
 
 const CROP_OPTIONS = [
-  'Rice',
-  'Wheat',
-  'Maize',
-  'Cotton',
-  'Sugarcane',
-  'Soybean',
-  'Potato',
-  'Tomato',
-  'Onion',
-  'Banana',
-  'Mango',
-  'Tea',
-  'Coffee',
-  'Groundnut',
-  'Sunflower',
-  'Chickpea',
-  'Pigeon Pea',
-  'Mustard',
-  'Barley',
-  'Jowar',
-  'Bajra',
-  'Coconut',
+    'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
+    'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
+    'Sunflower', 'Chickpea', 'Pigeon Pea', 'Mustard', 'Barley', 'Jowar',
+    'Bajra', 'Coconut',
 ];
 
 export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) {
   const [location, setLocation] = useState('');
   const [cropPlanted, setCropPlanted] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // New state for image handling
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const supabase = createClient();
   const userProfile = useSelector(selectUserProfile);
   const dispatch = useDispatch();
@@ -50,13 +41,18 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
     crop.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [searchTerm]);
+
   const fetchCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
+      setError('Geolocation is not supported by your browser');
       return;
     }
 
     setFetchingLocation(true);
+    setError('');
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
@@ -67,56 +63,104 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
           const data = await response.json();
           const locationString = `${data.locality || data.city || ''}, ${data.principalSubdivision || ''}, ${data.countryName || ''}`.trim();
           setLocation(locationString);
-        } catch (error) {
-          alert('Failed to fetch location details');
+        } catch (err) {
+          setError('Failed to fetch location details');
         } finally {
           setFetchingLocation(false);
         }
       },
-      (error) => {
-        alert('Unable to retrieve your location');
+      (err) => {
+        setError('Unable to retrieve your location. Please check browser permissions.');
         setFetchingLocation(false);
       }
     );
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleSave = async () => {
     if (!userProfile) {
-      console.error("No user found to update profile.");
-      onComplete(); // Exit gracefully
+      setError("No user found to update profile.");
       return;
     }
     setLoading(true);
+    setError('');
     try {
+        let profileImageUrl = null;
+
+        if (selectedFile) {
+            const filePath = `public/${userProfile.user_id}/${Date.now()}_${selectedFile.name}`;
+            const { error: uploadError } = await supabase.storage
+              .from('avatars')
+              .upload(filePath, selectedFile, {
+                cacheControl: '3600',
+                upsert: true,
+              });
+    
+            if (uploadError) throw uploadError;
+    
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+            if (!urlData.publicUrl) {
+              throw new Error("Could not get public URL for the image.");
+            }
+            profileImageUrl = urlData.publicUrl;
+        }
+
       const updates = {
         location: location || null,
         crop_planted: cropPlanted || null,
-        updated_at: new Date().toISOString(), // Supabase can also handle this with a trigger
+        profile_image_url: profileImageUrl,
       };
 
-      // Step 1: Update the user's profile in the database
-      const { error } = await supabase
+      const { data, error: dbError } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('user_id', userProfile.user_id); // Match the row by user ID
+        .eq('user_id', userProfile.user_id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (dbError) throw dbError;
       
-      // Step 2: Dispatch the updated details to the Redux store
-      dispatch(updateUserProfile({
-        location: updates.location,
-        crop_planted: updates.crop_planted,
-      }));
-
+      dispatch(updateUserProfile(data));
+      toast.success("Profile Setup Complete!");
       onComplete();
 
-    } catch (error) {
-      console.error('Error saving profile:', error);
-      // Still call onComplete to close the modal even if there's an error
-      onComplete(); 
+    } catch (err: any) {
+      setError(err.message || 'Error saving profile.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (showDropdown) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setHighlightedIndex(prev => (prev < filteredCrops.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlightedIndex(prev => (prev > 0 ? prev - 1 : filteredCrops.length - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (highlightedIndex >= 0) {
+          handleSelectCrop(filteredCrops[highlightedIndex]);
+        }
+      } else if (e.key === 'Escape') {
+        setShowDropdown(false);
+      }
+    }
+  };
+
+  const handleSelectCrop = (crop: string) => {
+    setCropPlanted(crop);
+    setSearchTerm(crop);
+    setShowDropdown(false);
   };
 
   return (
@@ -126,18 +170,47 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
         <p className="text-gray-600 mb-8">Help us personalize your experience</p>
 
         <div className="space-y-6">
+            <div className="flex justify-center">
+                <div 
+                  className="relative group w-32 h-32 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/png, image/jpeg"
+                        className="hidden"
+                    />
+                    {previewUrl ? (
+                        <img 
+                            src={previewUrl} 
+                            alt="Profile Preview" 
+                            className="w-full h-full rounded-full object-cover border-4 border-white shadow-md"
+                        />
+                    ) : (
+                        <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-md">
+                            <User className="w-16 h-16 text-gray-400"/>
+                        </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-8 h-8 text-white" />
+                    </div>
+                </div>
+            </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Location <span className="text-gray-400 text-xs">(Optional)</span>
             </label>
             <div className="space-y-3">
               <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-600 focus:outline-none transition-colors"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-600 outline-none"
                   placeholder="Enter your location"
                 />
               </div>
@@ -145,10 +218,10 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
                 type="button"
                 onClick={fetchCurrentLocation}
                 disabled={fetchingLocation}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-50 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-50 disabled:opacity-50"
               >
                 <Navigation className="w-5 h-5" />
-                {fetchingLocation ? 'Fetching location...' : 'Use Current Location'}
+                {fetchingLocation ? 'Fetching...' : 'Use Current Location'}
               </button>
             </div>
           </div>
@@ -158,33 +231,32 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
               Crop Planted <span className="text-gray-400 text-xs">(Optional)</span>
             </label>
             <div className="relative">
-              <Sprout className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
-              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+              <Sprout className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
               <input
                 type="text"
-                value={cropPlanted || searchTerm}
+                value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setCropPlanted('');
+                  setShowDropdown(true);
                 }}
+                onClick={() => setShowDropdown(true)}
                 onFocus={() => setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-green-600 focus:outline-none transition-colors"
+                onKeyDown={handleKeyDown}
+                className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-green-600 outline-none"
                 placeholder="Search and select crop"
               />
               {showDropdown && (
                 <div className="absolute w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto z-20">
                   {filteredCrops.length > 0 ? (
-                    filteredCrops.map((crop) => (
+                    filteredCrops.map((crop, index) => (
                       <button
                         key={crop}
                         type="button"
-                        onClick={() => {
-                          setCropPlanted(crop);
-                          setSearchTerm(crop);
-                          setShowDropdown(false);
-                        }}
-                        className="w-full text-left px-4 py-3 hover:bg-green-50 transition-colors"
+                        onClick={() => handleSelectCrop(crop)}
+                        className={`w-full text-left px-4 py-3 ${highlightedIndex === index ? 'bg-green-100' : 'hover:bg-green-50'}`}
                       >
                         {crop}
                       </button>
@@ -198,12 +270,19 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
               )}
             </div>
           </div>
+          
+          {error && (
+            <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              {error}
+            </div>
+          )}
 
           <div className="flex gap-4 pt-4">
             <button
               type="button"
               onClick={onSkip}
-              className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+              className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50"
             >
               Skip
             </button>
@@ -211,9 +290,9 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
               type="button"
               onClick={handleSave}
               disabled={loading}
-              className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all disabled:opacity-50"
+              className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 disabled:opacity-50"
             >
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? 'Saving...' : 'Save & Continue'}
             </button>
           </div>
         </div>
@@ -221,3 +300,4 @@ export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) 
     </div>
   );
 }
+
