@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { createClient } from '@/lib/supabase/client';
 import { setUser, clearUser } from '@/store/features/userSlice';
 import { AppDispatch } from '@/store/store';
+import DashboardSkeleton from './DashboardSkeleton';
 
 // This component will wrap our app and listen for auth changes.
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -70,7 +71,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   
   // Optional: Render a loading spinner while the session is being verified
   if (loading) {
-    return <div>Loading session...</div>; // Or a proper spinner component
+    return <DashboardSkeleton /> // Or a proper spinner component
   }
 
   return <>{children}</>;
