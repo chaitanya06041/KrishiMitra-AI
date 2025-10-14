@@ -158,6 +158,7 @@ const Notifications = () => {
             showAllNotifications ? "max-h-96" : "max-h-64"
           }`}
         >
+          {notificationsToShow.length === 0 && <p className="text-green-600">No New Notifications</p>}
           {notificationsToShow.map((notification) => (
             <DropdownMenuItem
             //   key={notification.user_id}

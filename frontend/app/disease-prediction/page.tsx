@@ -2,7 +2,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { Upload, Loader2, AlertCircle, X } from "lucide-react";
+import { Upload, Loader2, AlertCircle, X, CircleCheckBig } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -11,13 +11,13 @@ import { useAxios } from "@/hooks/use-Axios";
 
 // --- NEW IMPORTS ---
 import { useSelector } from "react-redux";
-import { RootState } from "@/store/store"; // Adjust this path to your store definition
 import { selectUserProfile } from "@/store/features/userSlice";
 import { createClient } from "@/lib/supabase/client";
 // --------------------
 
 interface PredictionResponse {
   prediction: string;
+  crop: string;
   recommendation: string;
 }
 
@@ -29,11 +29,12 @@ const DiseasePrediction = () => {
   const [prediction, setPrediction] = useState<{
     disease: string;
     recommendations: string;
+    crop: string;
   } | null>(null);
 
   // --- NEW: Get user from Redux store ---
   // const { user } = useSelector((state: RootState) => state.user);
-  const user = useSelector(selectUserProfile)
+  const user = useSelector(selectUserProfile);
   const supabase = createClient();
   // ---------------------------------------
 
@@ -110,7 +111,9 @@ const DiseasePrediction = () => {
   };
 
   // --- NEW: Function to save prediction history ---
-  const savePredictionToHistory = async (predictionResult: PredictionResponse) => {
+  const savePredictionToHistory = async (
+    predictionResult: PredictionResponse
+  ) => {
     // Only proceed if a user is logged in and there's an image file
     if (!user || !imageFile) {
       console.log("User not logged in or no image file. Skipping save.");
@@ -120,45 +123,44 @@ const DiseasePrediction = () => {
     try {
       // 1. Upload the image to Supabase Storage
       // Create a unique file path to avoid name collisions
-      const fileExtension = imageFile.name.split('.').pop();
+      const fileExtension = imageFile.name.split(".").pop();
       const filePath = `${user.user_id}/${Date.now()}.${fileExtension}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('history_images') // Your bucket name
+        .from("history_images") // Your bucket name
         .upload(filePath, imageFile);
-      
+
       if (uploadError) {
         throw uploadError;
       }
 
       // 2. Get the public URL of the uploaded image
       const { data: urlData } = supabase.storage
-        .from('history_images')
+        .from("history_images")
         .getPublicUrl(filePath);
 
       const imageUrl = urlData.publicUrl;
 
       // 3. Insert the record into the 'history' table
-      const { error: insertError } = await supabase
-        .from('history')
-        .insert({
-          user_id: user.user_id,
-          image_url: imageUrl,
-          disease: predictionResult.prediction,
-          recommendation: predictionResult.recommendation,
-          // created_at is usually handled by the database with a default value
-        });
+      const { error: insertError } = await supabase.from("history").insert({
+        user_id: user.user_id,
+        image_url: imageUrl,
+        disease: predictionResult.prediction,
+        recommendation: predictionResult.recommendation,
+        crop: predictionResult.crop,
+        // created_at is usually handled by the database with a default value
+      });
 
       if (insertError) {
         throw insertError;
       }
 
       console.log("Prediction history saved successfully!");
-
     } catch (error) {
       console.error("Error saving prediction history:", error);
       toast.error("Failed to save history", {
-        description: "Your prediction was successful, but we couldn't save it to your history.",
+        description:
+          "Your prediction was successful, but we couldn't save it to your history.",
       });
     }
   };
@@ -171,13 +173,13 @@ const DiseasePrediction = () => {
           setPrediction({
             disease: predictionData.prediction,
             recommendations: predictionData.recommendation,
+            crop: predictionData.crop,
           });
           toast.success("Prediction Complete");
-          
+
           // --- NEW: Call the function to save the result ---
           await savePredictionToHistory(predictionData);
           // --------------------------------------------------
-
         } else if (predictionError) {
           setError(predictionError);
           toast.error("Prediction Failed", { description: predictionError });
@@ -186,10 +188,9 @@ const DiseasePrediction = () => {
         setIsLoading(false);
       }
     };
-  
+
     handlePredictionResult();
   }, [predictionLoaded, predictionData, predictionError]);
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -197,14 +198,24 @@ const DiseasePrediction = () => {
       <main className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-4xl">
           <div className="mb-8 text-center">
-            <h1 className="mb-3 text-4xl font-bold text-foreground" style={{color: '#093419'}}>Crop Disease Prediction</h1>
-            <p className="text-muted-foreground" style={{color: '#527A61'}}>Upload an image of your crop to detect diseases and get recommendations</p>
+            <h1
+              className="mb-3 text-4xl font-bold text-foreground"
+              style={{ color: "#093419" }}
+            >
+              Crop Disease Prediction
+            </h1>
+            <p className="text-muted-foreground" style={{ color: "#527A61" }}>
+              Upload an image of your crop to detect diseases and get
+              recommendations
+            </p>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Card className="p-6 shadow-medium">
-              <h2 className="mb-4 text-xl font-semibold text-foreground">Upload Image</h2>
-              
+              <h2 className="mb-4 text-xl font-semibold text-foreground">
+                Upload Image
+              </h2>
+
               <div className="space-y-4">
                 <label
                   htmlFor="image-upload"
@@ -230,8 +241,12 @@ const DiseasePrediction = () => {
                   ) : (
                     <div className="text-center">
                       <Upload className="mx-auto h-12 w-12 text-muted-foreground transition-colors group-hover:text-green-700" />
-                      <p className="mt-2 text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                      <p className="mt-1 text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        Click to upload or drag and drop
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        PNG, JPG up to 5MB
+                      </p>
                     </div>
                   )}
                   <input
@@ -262,23 +277,46 @@ const DiseasePrediction = () => {
             </Card>
 
             <Card className="p-6 shadow-medium">
-              <h2 className="mb-4 text-xl font-semibold text-foreground">Results</h2>
-              
+              <h2 className="mb-4 text-xl font-semibold text-foreground">
+                Results
+              </h2>
+
               {isLoading === false && prediction ? (
                 <div className="space-y-4 animate-fade-in">
+                  <div className="rounded-lg border border-border bg-blue-50/25 p-4">
+                    <h3 className="mb-2 font-semibold text-foreground">
+                      Crop: {prediction.crop}
+                    </h3>
+                  </div>
+
                   <div className="rounded-lg bg-blue-50/50 p-4 border">
                     <div className="flex items-start gap-3">
-                      <AlertCircle className="mt-1 h-5 w-5 text-primary" />
+                      {prediction.disease.toLowerCase() === "healthy" ? (
+                        <CircleCheckBig className="mt-1 h-5 w-5 text-green-600" />
+                      ) : (
+                        <AlertCircle className="mt-1 h-5 w-5 text-red-600" />
+                      )}
                       <div>
-                        <h3 className="font-semibold text-foreground">Detected Disease</h3>
-                        {prediction.disease === "No disease detected" ? <p className="mt-1 text-lg font-bold text-green-600">{prediction.disease}</p> :
-                        <p className="mt-1 text-lg font-bold text-red-600">{prediction.disease}</p>}
+                        <h3 className="font-semibold text-foreground">
+                          Detected Disease
+                        </h3>
+                        {prediction.disease.toLowerCase() === "healthy" ? (
+                          <p className="mt-1 text-lg font-bold text-green-600">
+                            No Disease Detected
+                          </p>
+                        ) : (
+                          <p className="mt-1 text-lg font-bold text-red-600">
+                            {prediction.disease}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className="rounded-lg border border-border bg-blue-50/25 p-4">
-                    <h3 className="mb-2 font-semibold text-foreground">Recommendations</h3>
+                    <h3 className="mb-2 font-semibold text-foreground">
+                      Recommendations
+                    </h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       {prediction.recommendations}
                     </p>
@@ -289,7 +327,9 @@ const DiseasePrediction = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      <p className="mt-4 text-sm text-muted-foreground">Analyzing your image...</p>
+                      <p className="mt-4 text-sm text-muted-foreground">
+                        Analyzing your image...
+                      </p>
                     </>
                   ) : error ? (
                     <div className="text-center text-destructive">
@@ -303,7 +343,6 @@ const DiseasePrediction = () => {
                     </p>
                   )}
                 </div>
-
               )}
             </Card>
           </div>

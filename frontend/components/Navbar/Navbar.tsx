@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, Sprout, Menu } from "lucide-react";
 
@@ -49,7 +49,6 @@ const Navbar = () => {
       <nav className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
-            {/* ... (Unchanged code for mobile menu, logo, and desktop nav) ... */}
             <div className="flex items-center gap-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -58,6 +57,10 @@ const Navbar = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-64">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <SheetDescription className="sr-only">
+                    A list of links to navigate to different pages of the application.
+                  </SheetDescription>
                   <div className="flex flex-col gap-4 mt-8">
                     <Link href="/disease-prediction" className={`text-sm font-medium transition-colors px-4 py-2 rounded-md ${isActive("/disease-prediction") ? "bg-accent text-primary" : "text-green-700 hover:text-green-900"}`}>
                       Crop Disease Prediction
@@ -72,7 +75,7 @@ const Navbar = () => {
                 </SheetContent>
               </Sheet>
               <Link
-                href="/"
+                href="/dashboard"
                 className="flex items-center gap-2 font-bold text-xl text-primary" style={{color: '#396619'}}
               >
                 <Sprout className="h-6 w-6" />
@@ -115,7 +118,6 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               
               <Notifications />
-              {/* ... (Unchanged Profile Dropdown) ... */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
@@ -166,3 +168,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

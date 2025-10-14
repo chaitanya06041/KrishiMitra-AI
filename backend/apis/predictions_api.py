@@ -109,8 +109,11 @@ async def disease_prediction_endpoint(file: UploadFile = File(...)):
 
         if "Error:" in predicted_disease:
              raise HTTPException(status_code=400, detail=predicted_disease)
-
-        return {'prediction': predicted_disease, 'recommendation': "Test"} # Placeholder recommendation
+        
+        parts = predicted_disease.split('___')
+        crop = parts[0].replace(',_', ' ').replace('_', ' ')
+        disease = parts[1].replace('_', ' ').strip()
+        return {'crop': crop, 'prediction': disease, 'recommendation': "Test"} # Placeholder recommendation
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
     finally:
