@@ -5,18 +5,18 @@ import { createClient } from '@/lib/supabase/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile, selectUserProfile } from '@/store/features/userSlice';
 import { toast } from "sonner";
-
+import CROP_OPTIONS from '@/data/crops.json'
 interface ProfileSetupProps {
   onComplete: () => void;
   onSkip: () => void;
 }
 
-const CROP_OPTIONS = [
-    'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
-    'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
-    'Sunflower', 'Chickpea', 'Pigeon Pea', 'Mustard', 'Barley', 'Jowar',
-    'Bajra', 'Coconut',
-];
+// const CROP_OPTIONS = [
+//     'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
+//     'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
+//     'Sunflower', 'Chickpea', 'Pigeon Pea', 'Mustard', 'Barley', 'Jowar',
+//     'Bajra', 'Coconut',
+// ];
 
 export default function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) {
   const [location, setLocation] = useState('');

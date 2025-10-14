@@ -5,17 +5,18 @@ import { createClient } from '@/lib/supabase/client';
 import { selectUserProfile, updateUserProfile } from '@/store/features/userSlice';
 import type { UserProfile } from '@/store/features/userSlice';
 import { toast } from "sonner";
+import CROP_OPTIONS from '@/data/crops.json'
 
 interface EditProfileDialogProps {
   onClose: () => void;
 }
 
-const CROP_OPTIONS = [
-    'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
-    'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
-    'Sunflower', 'Chickpea', 'Pigeon Pea', 'Mustard', 'Barley', 'Jowar',
-    'Bajra', 'Coconut',
-];
+// const CROP_OPTIONS = [
+//     'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
+//     'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
+//     'Sunflower', 'Chickpea', 'Pigeon Pea', 'Mustard', 'Barley', 'Jowar',
+//     'Bajra', 'Coconut',
+// ];
 
 const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
   // 1. Connect to Redux
