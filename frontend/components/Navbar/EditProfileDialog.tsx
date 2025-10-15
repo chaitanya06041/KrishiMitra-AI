@@ -11,6 +11,13 @@ interface EditProfileDialogProps {
   onClose: () => void;
 }
 
+interface updateData {
+  crop_planted: string | null;
+  location: string | null;
+  weather_alerts: boolean;
+  profile_image_url: string | null;
+}
+
 // const CROP_OPTIONS = [
 //     'Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Soybean', 'Potato',
 //     'Tomato', 'Onion', 'Banana', 'Mango', 'Tea', 'Coffee', 'Groundnut',
@@ -168,15 +175,24 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({ onClose }) => {
         profileImageUrl = urlData.publicUrl;
       }
 
+      const updateData: updateData = {
+        weather_alerts: formData.weather_alerts,
+        profile_image_url: profileImageUrl,
+        crop_planted : null,
+        location : null,
+      };
+      if (formData.crop_planted && formData.crop_planted.trim() !== '') {
+        updateData.crop_planted = formData.crop_planted;
+      }
+
+      // Conditionally add location if it's a non-empty string
+      if (formData.location && formData.location.trim() !== '') {
+        updateData.location = formData.location;
+}
       // Step 3: Update the data in the Supabase 'profiles' table
       const { data, error: dbError } = await supabase
         .from('profiles')
-        .update({
-          crop_planted: formData.crop_planted,
-          location: formData.location,
-          weather_alerts: formData.weather_alerts,
-          profile_image_url: profileImageUrl, // Add the new URL to the update
-        })
+        .update(updateData)
         .eq('user_id', userProfile.user_id)
         .select()
         .single();

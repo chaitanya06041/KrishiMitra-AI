@@ -2,8 +2,88 @@ import requests
 import json
 import os
 from datetime import date
+from supabase import create_client, Client
+from dotenv import load_dotenv
+load_dotenv()
 
-def get_todays_avg_weather(city_name: str):
+
+def run_alert_system():
+    url: str = os.getenv("SUPABASE_URL")
+    key: str = os.getenv("SUPABASE_KEY")
+    try:
+        supabase: Client = create_client(url, key)
+    except Exception as e:
+        print(f"Error connecting to Supabase: {e}")
+        return
+    locations = fetch_locations(supabase)
+    weather_data = {}
+    for location in locations:
+        try:
+            weather_data[location] = get_weather_by_location(location.split(",")[0].strip())
+        except Exception as e:
+            print("Error fetching weather details")
+            return
+    users_data = get_users_data(supabase)
+    print(users_data)
+    crop_rules = load_alerts_data()
+    for user in users_data:
+        crop = user["crop"]
+        location = user["location"]
+        weather = weather_data.get(location)
+        user_id = user["user_id"]
+        if not weather:
+            continue
+        alerts = get_alerts(crop, weather, crop_rules)
+        if alerts:
+            message = f"Alert for your {crop} crop in {location}:\n\n"
+            for msg, alert_msg, preventive_measure in alerts:
+                message += f"{msg}. {alert_msg} Preventive measure: {preventive_measure}\n"
+            send_email(user_id, user["email"], message, supabase)
+
+def send_email(user_id, email, message, supabase: Client):
+    try:
+        data_to_insert = {
+            "user_id": user_id,
+            "message": message
+        }
+        response = supabase.table("notifications").insert(data_to_insert).execute()
+        if len(response.data) > 0:
+            print("✅ Successfully inserted notification:")
+        
+    except Exception as e: 
+        print("Error inserting the notification", e)
+        return
+    print("Alert message sent to", email)
+    print("Message: ", message)
+    print('\n')
+
+def get_users_data(supabase: Client):
+    profiles_res = supabase.table("profiles") \
+        .select("user_id, location, crop_planted") \
+        .not_.is_("location", None) \
+        .not_.is_("crop_planted", None) \
+        .not_.is_("weather_alerts", False) \
+        .execute()
+    profiles = profiles_res.data if profiles_res.data else []
+    users_res = supabase.auth.admin.list_users()
+    users = users_res if isinstance(users_res, list) else getattr(users_res, "users", [])
+    user_email_map = {u.id: u.email for u in users}
+    merged_data = []
+    for profile in profiles:
+        user_id = profile["user_id"]
+        email = user_email_map.get(user_id)
+        if email:
+            merged_data.append({
+                'user_id': user_id,
+                "email": email,
+                "location": profile["location"],
+                "crop": profile["crop_planted"]
+            })
+    return merged_data
+
+        
+
+def get_weather_by_location(city_name: str):
     # Step 1: Get coordinates from Open-Meteo Geocoding API
     geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=1"
     geo_res = requests.get(geo_url)
@@ -75,6 +155,7 @@ def load_alerts_data():
     return crop_rules
 
 def check_alerts(crop, weather, crop_rules):
+    print(weather)
     alerts = []
     if crop not in crop_rules:
         print(f"Warning: No alert rules found for crop '{crop}'.")
@@ -107,10 +188,19 @@ def check_alerts(crop, weather, crop_rules):
     
     return alerts
 
-def get_alerts(crop, location):
-    weather_data = get_todays_avg_weather(location)
-    print(weather_data)
-    crop_rules = load_alerts_data()
+def fetch_locations(supabase: Client):
+    url: str = os.getenv("SUPABASE_URL")
+    key: str = os.getenv("SUPABASE_KEY")
+    locations = supabase.table("profiles").select("location").eq('weather_alerts', True).execute().data
+    unique_locations = set()
+    for location in locations:
+        if location["location"]:
+            unique_locations.add(location["location"])
+    return unique_locations
+
+
+
+def get_alerts(crop, weather_data, crop_rules):
     if not crop_rules:
         return ""
     alert = check_alerts(crop, weather_data, crop_rules)
@@ -121,6 +211,4 @@ def get_alerts(crop, location):
 
 
 if __name__ == "__main__":
-    city = "Sangli"
-    crop = "Lentil"
-    print(get_alerts(crop, city))
+    run_alert_system()
