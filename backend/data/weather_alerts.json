@@ -1,0 +1,1149 @@
+{
+  "Tomato": {
+    "min_temperature": {
+      "value": 18,
+      "alert_message": "Temperature below 18 \u00b0C is too low for tomato; growth will slow or flowering may be affected.",
+      "preventive_measure": "Use mulch, row covers or plastic tunnels to retain warmth."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C is high for tomato; risk of flower drop or heat stress.",
+      "preventive_measure": "Provide shade nets, increase irrigation frequency, and apply mulch to reduce soil temp."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% may lead to poor pollination and pest issues.",
+      "preventive_measure": "Use misting, sprinklers, or increase soil moisture to boost ambient humidity."
+    },
+    "max_humidity": {
+      "value": 85,
+      "alert_message": "Humidity above 85% raises fungal disease risk.",
+      "preventive_measure": "Improve field ventilation, avoid late-evening irrigation, use preventive fungicides."
+    },
+    "min_rainfall": {
+      "value": 5,
+      "alert_message": "Rainfall <5 mm may cause drought stress.",
+      "preventive_measure": "Apply irrigation (drip or sprinkler) to maintain soil moisture."
+    },
+    "max_rainfall": {
+      "value": 25,
+      "alert_message": "Rainfall >25 mm may cause waterlogging or fruit cracking.",
+      "preventive_measure": "Ensure drainage, use raised beds, avoid puddling."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 may cause leaf or fruit sunscald.",
+      "preventive_measure": "Use shade nets during peak sunlight hours."
+    }
+  },
+  "Rice": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C may slow rice growth and delay development.",
+      "preventive_measure": "Consider early sowing or heat-appropriate variety."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C can cause sterility or grain filling issues in rice.",
+      "preventive_measure": "Use heat-tolerant varieties, ensure adequate water supply and mulching."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% can stress rice plants and reduce tillering.",
+      "preventive_measure": "Maintain flooded or saturated conditions if possible to raise humidity."
+    },
+    "max_humidity": {
+      "value": 95,
+      "alert_message": "Humidity above 95% increases disease risk (blast, sheath blight).",
+      "preventive_measure": "Improve drainage, space plants to increase airflow, and apply fungicides if needed."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm may cause water stress in rice fields.",
+      "preventive_measure": "Apply supplemental irrigation (flood or sprinkle) to maintain flooded condition."
+    },
+    "max_rainfall": {
+      "value": 150,
+      "alert_message": "Rainfall >150 mm may flood fields excessively, leading to lodging or lack of oxygen.",
+      "preventive_measure": "Ensure good field drainage and use raised beds or ridges."
+    },
+    "max_uv_index": {
+      "value": 11,
+      "alert_message": "UV index >11 can cause leaf scorch in rice.",
+      "preventive_measure": "Consider shade nets or reflective mulches during peak sun."
+    }
+  },
+  "Wheat": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C risks cold stress and delayed germination in wheat.",
+      "preventive_measure": "Use early-season protective measures (e.g., mulching) or delay sowing slightly."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C during grain fill causes yield loss in wheat.",
+      "preventive_measure": "Ensure timely irrigation and consider heat-tolerant varieties."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% can dry out wheat florets, reducing pollination.",
+      "preventive_measure": "Maintain soil moisture and use windbreaks to reduce desiccation."
+    },
+    "max_humidity": {
+      "value": 85,
+      "alert_message": "Humidity above 85% raises risk of rust and fungal diseases in wheat.",
+      "preventive_measure": "Improve field ventilation and apply fungicides preventively."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may not suffice for wheat initial growth, causing drought stress.",
+      "preventive_measure": "Provide irrigation to support early growth."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm near maturity can cause lodging and rot in wheat.",
+      "preventive_measure": "Ensure drainage and avoid over-irrigation."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 can stress wheat leaves and accelerate drying.",
+      "preventive_measure": "Maintain optimal nutrition to help plants tolerate high UV."
+    }
+  },
+  "Maize": {
+    "min_temperature": {
+      "value": 10,
+      "alert_message": "Temperature below 10 \u00b0C stalls maize growth and can cause cold injury.",
+      "preventive_measure": "Delay sowing until warmer conditions or use plastic film mulch to warm soil."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C risks flower abortion and yield loss in maize.",
+      "preventive_measure": "Provide shade during peak heat, increase irrigation frequency."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% increases water stress for maize.",
+      "preventive_measure": "Ensure sufficient soil moisture through irrigation."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% can promote foliar diseases (e.g., rust) in maize.",
+      "preventive_measure": "Improve air flow with wider spacing and remove diseased plants."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm can cause water stress for maize.",
+      "preventive_measure": "Irrigate early to maintain soil moisture."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog maize roots and reduce oxygen.",
+      "preventive_measure": "Ensure good drainage or raised beds to avoid waterlogging."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may cause leaf bleaching in maize.",
+      "preventive_measure": "Apply protective shade or anti-transpirant sprays if possible."
+    }
+  },
+  "Sugarcane": {
+    "min_temperature": {
+      "value": 20,
+      "alert_message": "Temperature below 20 \u00b0C slows sugarcane growth and stunts shoots.",
+      "preventive_measure": "Delay planting until warmer weather or use mulch to warm soil."
+    },
+    "max_temperature": {
+      "value": 38,
+      "alert_message": "Temperature above 38 \u00b0C can cause heat stress and wilting in sugarcane.",
+      "preventive_measure": "Provide irrigation and shading (e.g., light nets) during peaks."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% may increase water loss and stress sugarcane.",
+      "preventive_measure": "Maintain soil moisture through irrigation and misting."
+    },
+    "max_humidity": {
+      "value": 95,
+      "alert_message": "Humidity above 95% increases fungal disease risk (e.g., red rot).",
+      "preventive_measure": "Improve drainage and fungicide application."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm may not meet sugarcane's high water needs.",
+      "preventive_measure": "Ensure adequate irrigation."
+    },
+    "max_rainfall": {
+      "value": 200,
+      "alert_message": "Rainfall >200 mm risks waterlogging and lodging in sugarcane.",
+      "preventive_measure": "Ensure proper drainage and avoid puddling."
+    },
+    "max_uv_index": {
+      "value": 11,
+      "alert_message": "UV index >11 may cause sunburn spots on sugarcane leaves.",
+      "preventive_measure": "Use shade cloth or intercropping to reduce direct sun."
+    }
+  },
+  "Potato": {
+    "min_temperature": {
+      "value": 7,
+      "alert_message": "Temperature below 7 \u00b0C can cause potato tubers to become dormant.",
+      "preventive_measure": "Use heat mulch or delay planting until soil warms."
+    },
+    "max_temperature": {
+      "value": 30,
+      "alert_message": "Temperature above 30 \u00b0C can reduce tuber formation and yield.",
+      "preventive_measure": "Irrigate more frequently and use light shade during hottest hours."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% can increase transpiration and stress potatoes.",
+      "preventive_measure": "Mulch soil to retain moisture and use irrigation."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% favors late blight and other fungal diseases in potato.",
+      "preventive_measure": "Space plants for ventilation and apply protective fungicides."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require supplemental irrigation for potato.",
+      "preventive_measure": "Irrigate adequately to keep soil moist but not waterlogged."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm may waterlog potato tubers and cause rot.",
+      "preventive_measure": "Ensure good drainage or raised beds."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can cause leaf scorch in potato plants.",
+      "preventive_measure": "Use light shade or anti-transpirant during extreme sunlight."
+    }
+  },
+  "Onion": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C can damage emerging onion seedlings.",
+      "preventive_measure": "Use row covers or delay sowing until warmer weather."
+    },
+    "max_temperature": {
+      "value": 32,
+      "alert_message": "Temperature above 32 \u00b0C can weaken bulb formation and yield in onions.",
+      "preventive_measure": "Provide light irrigation and ensure adequate nutrition."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% can increase onion plant water stress.",
+      "preventive_measure": "Maintain soil moisture with irrigation."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% increases risk of downy mildew in onions.",
+      "preventive_measure": "Improve air circulation and apply fungicides if needed."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for onions.",
+      "preventive_measure": "Irrigate to ensure steady soil moisture."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can cause bulb rot or delay harvest in onions.",
+      "preventive_measure": "Ensure proper drainage and avoid overhead watering."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can increase sunscald risk on onion leaves.",
+      "preventive_measure": "Use mulch or row covers to protect plants."
+    }
+  },
+  "Chili (Capsicum)": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows chili growth and pollination.",
+      "preventive_measure": "Use plastic tunnels or greenhouses to raise temperature."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C risks blossom drop and heat stress in chili.",
+      "preventive_measure": "Provide shade and keep soil moist with irrigation."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% can dry out chili flowers, reducing fruit set.",
+      "preventive_measure": "Increase humidity with misting or mulch."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% raises disease risk (blight, blisters) in chili.",
+      "preventive_measure": "Improve air flow and avoid overhead watering in evenings."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for chili crops.",
+      "preventive_measure": "Irrigate regularly to ensure continuous moisture."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can waterlog chili roots and cause fruit cracking.",
+      "preventive_measure": "Ensure drainage and avoid waterlogging."
+    },
+    "max_uv_index": {
+      "value": 11,
+      "alert_message": "UV index >11 can scorch chili foliage.",
+      "preventive_measure": "Use shade nets or protective sprays."
+    }
+  },
+  "Cotton": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C delays cotton growth.",
+      "preventive_measure": "Delay planting until warmer weather."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C can cause boll shedding in cotton.",
+      "preventive_measure": "Provide irrigation to cool plants and use heat-tolerant varieties."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can increase transpiration in cotton.",
+      "preventive_measure": "Ensure adequate soil moisture."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% during boll opening causes rot in cotton.",
+      "preventive_measure": "Ensure field ventilation and pick cotton promptly."
+    },
+    "min_rainfall": {
+      "value": 20,
+      "alert_message": "Rainfall <20 mm requires irrigation for cotton.",
+      "preventive_measure": "Schedule irrigation before flowering."
+    },
+    "max_rainfall": {
+      "value": 80,
+      "alert_message": "Rainfall >80 mm can delay cotton harvest and reduce fiber quality.",
+      "preventive_measure": "Ensure drainage and avoid late-season rain."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may damage cotton bolls.",
+      "preventive_measure": "Provide temporary shade or cover bolls if possible."
+    }
+  },
+  "Banana": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows banana growth and can yellow leaves:contentReference[oaicite:6]{index=6}.",
+      "preventive_measure": "Use frost protection or heaters during cold spells."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C causes heat stress and leaf wilt in banana:contentReference[oaicite:7]{index=7}.",
+      "preventive_measure": "Provide shade and mulching to cool the roots."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% increases water loss in banana.",
+      "preventive_measure": "Use misting or maintain ground cover to raise local humidity."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% fosters fungal diseases (e.g. Black Sigatoka) in banana:contentReference[oaicite:8]{index=8}.",
+      "preventive_measure": "Ensure good drainage and apply fungicides."
+    },
+    "min_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall <50 mm may stress banana without irrigation.",
+      "preventive_measure": "Use drip irrigation to meet banana's high water demand."
+    },
+    "max_rainfall": {
+      "value": 200,
+      "alert_message": "Rainfall >200 mm can waterlog banana roots and cause toppling.",
+      "preventive_measure": "Ensure field drainage; avoid planting on flat low areas."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may burn banana leaf tips.",
+      "preventive_measure": "Use shade cloth during peak sunlight."
+    }
+  },
+  "Chickpea": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C can inhibit chickpea germination.",
+      "preventive_measure": "Sow after any late frosts and consider seed priming."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C during flowering causes flower drop in chickpea.",
+      "preventive_measure": "Mulch and irrigate to reduce heat stress."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can increase chickpea water stress.",
+      "preventive_measure": "Ensure steady soil moisture."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can promote Ascochyta blight in chickpea.",
+      "preventive_measure": "Improve air flow and use resistant varieties."
+    },
+    "min_rainfall": {
+      "value": 5,
+      "alert_message": "Rainfall <5 mm may require irrigation for chickpea.",
+      "preventive_measure": "Irrigate at critical growth stages (flowering)."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can waterlog chickpea roots, which are sensitive.",
+      "preventive_measure": "Ensure drainage and avoid waterlogging."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 can stress chickpea plants.",
+      "preventive_measure": "Use mulch to keep soil cool and moist."
+    }
+  },
+  "Pigeon Pea": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows pigeon pea growth.",
+      "preventive_measure": "Delay planting until soil warms up."
+    },
+    "max_temperature": {
+      "value": 38,
+      "alert_message": "Temperature above 38 \u00b0C can cause heat stress in pigeon pea.",
+      "preventive_measure": "Provide irrigation and shade if possible."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% may increase drought stress in pigeon pea.",
+      "preventive_measure": "Ensure adequate moisture through irrigation."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can encourage fungal diseases in pigeon pea.",
+      "preventive_measure": "Provide good spacing and aeration."
+    },
+    "min_rainfall": {
+      "value": 5,
+      "alert_message": "Rainfall <5 mm may require irrigation for pigeon pea.",
+      "preventive_measure": "Ensure soil moisture with irrigation."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog pigeon pea, which prefers drier conditions.",
+      "preventive_measure": "Avoid planting in poorly drained soils."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may cause leaf scorch on pigeon pea.",
+      "preventive_measure": "Use shade or mulches to mitigate UV."
+    }
+  },
+  "Soybean": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows soybean germination and growth.",
+      "preventive_measure": "Plant after soil warms and consider seed treatments."
+    },
+    "max_temperature": {
+      "value": 38,
+      "alert_message": "Temperature above 38 \u00b0C can cause flower drop and yield loss in soybean.",
+      "preventive_measure": "Keep plants well-irrigated and mulch soil."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% can increase soybean transpiration stress.",
+      "preventive_measure": "Maintain soil moisture with regular irrigation."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% can promote white mold and other diseases in soybean.",
+      "preventive_measure": "Improve field drainage and avoid dense canopy."
+    },
+    "min_rainfall": {
+      "value": 20,
+      "alert_message": "Rainfall <20 mm may not meet soybean moisture needs.",
+      "preventive_measure": "Supplement with irrigation."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog soybeans and cause root rot.",
+      "preventive_measure": "Ensure proper drainage."
+    },
+    "max_uv_index": {
+      "value": 11,
+      "alert_message": "UV index >11 may stress soybean foliage.",
+      "preventive_measure": "Use shade nets or mow intercrops to reduce solar radiation."
+    }
+  },
+  "Mustard (Rapeseed)": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C can damage mustard seedlings.",
+      "preventive_measure": "Sow after frost risk or cover seedlings."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C can halt mustard growth and cause flower drop:contentReference[oaicite:9]{index=9}.",
+      "preventive_measure": "Provide shading and ensure moisture during hot spells."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can dry mustard flowers, affecting pollination.",
+      "preventive_measure": "Maintain soil moisture to prevent drought stress."
+    },
+    "max_humidity": {
+      "value": 75,
+      "alert_message": "Humidity above 75% raises disease risk (white rust) in mustard:contentReference[oaicite:10]{index=10}.",
+      "preventive_measure": "Ensure good spacing and timely fungicide applications."
+    },
+    "min_rainfall": {
+      "value": 20,
+      "alert_message": "Rainfall <20 mm may require irrigation for mustard.",
+      "preventive_measure": "Apply irrigation especially during flowering."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can cause waterlogging and lodging in mustard.",
+      "preventive_measure": "Improve drainage and avoid heavy irrigation."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 may damage mustard leaves and flowers.",
+      "preventive_measure": "Use shade cloth or inter-cropping for protection."
+    }
+  },
+  "Guar (Cluster Bean)": {
+    "min_temperature": {
+      "value": 20,
+      "alert_message": "Temperature below 20 \u00b0C slows guar germination and growth.",
+      "preventive_measure": "Delay sowing until warm conditions."
+    },
+    "max_temperature": {
+      "value": 45,
+      "alert_message": "Temperature above 45 \u00b0C causes heat stress in guar.",
+      "preventive_measure": "Provide irrigation and heat-tolerant varieties."
+    },
+    "min_humidity": {
+      "value": 20,
+      "alert_message": "Humidity below 20% increases drought stress in guar.",
+      "preventive_measure": "Maintain soil moisture with irrigation."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can encourage fungal diseases in guar.",
+      "preventive_measure": "Ensure good airflow."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm may require irrigation for guar.",
+      "preventive_measure": "Keep soil moderately moist, especially pre-flowering."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog guar, which prefers semi-arid conditions.",
+      "preventive_measure": "Ensure field is well-drained."
+    },
+    "max_uv_index": {
+      "value": 12,
+      "alert_message": "UV index >12 can stress guar plants.",
+      "preventive_measure": "Use reflective mulches if possible."
+    }
+  },
+  "Lentil": {
+    "min_temperature": {
+      "value": 4,
+      "alert_message": "Temperature below 4 \u00b0C can damage lentil seedlings.",
+      "preventive_measure": "Sow after frost risk; use tolerant varieties."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C during flowering causes flower drop in lentils.",
+      "preventive_measure": "Irrigate and mulch to moderate temperature."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can cause lentils to desiccate.",
+      "preventive_measure": "Maintain soil moisture."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can promote disease (Ascochyta) in lentils.",
+      "preventive_measure": "Ensure air circulation."
+    },
+    "min_rainfall": {
+      "value": 20,
+      "alert_message": "Rainfall <20 mm may not be sufficient for lentils.",
+      "preventive_measure": "Irrigate before flowering."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can waterlog lentils and cause root rot.",
+      "preventive_measure": "Improve drainage."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may stress lentil foliage.",
+      "preventive_measure": "Use shade nets during hottest hours."
+    }
+  },
+  "Groundnut (Peanut)": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows peanut germination.",
+      "preventive_measure": "Plant after soil warms to 18-20\u00b0C."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C can cause flower and pod drop in peanuts.",
+      "preventive_measure": "Ensure sufficient soil moisture and mulch."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% can stress peanuts and reduce yield.",
+      "preventive_measure": "Maintain soil moisture through irrigation."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% raises risk of leaf spot in peanuts.",
+      "preventive_measure": "Improve field drainage and rotate crops."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm may not meet peanut's water needs.",
+      "preventive_measure": "Irrigate during flowering and pegging."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog peanuts and cause pod rot.",
+      "preventive_measure": "Ensure well-drained soils."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may stress peanut plants.",
+      "preventive_measure": "Mulch and provide moisture to reduce stress."
+    }
+  },
+  "Sorghum (Jowar)": {
+    "min_temperature": {
+      "value": 10,
+      "alert_message": "Temperature below 10 \u00b0C hampers sorghum germination.",
+      "preventive_measure": "Sow when soil has warmed."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C can cause heat stress in sorghum.",
+      "preventive_measure": "Use drought-tolerant varieties."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can dry out sorghum.",
+      "preventive_measure": "Ensure soil moisture."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% can promote fungal diseases in sorghum.",
+      "preventive_measure": "Improve air flow."
+    },
+    "min_rainfall": {
+      "value": 20,
+      "alert_message": "Rainfall <20 mm may require irrigation for sorghum.",
+      "preventive_measure": "Irrigate during establishment."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can cause lodging in sorghum.",
+      "preventive_measure": "Use well-drained soils and balanced fertilization."
+    },
+    "max_uv_index": {
+      "value": 12,
+      "alert_message": "UV index >12 may damage sorghum leaves.",
+      "preventive_measure": "Use intercropping or mulch to moderate temperature."
+    }
+  },
+  "Pearl Millet (Bajra)": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C severely limits bajra germination.",
+      "preventive_measure": "Avoid planting in cold soils."
+    },
+    "max_temperature": {
+      "value": 45,
+      "alert_message": "Temperature above 45 \u00b0C can cause heat damage in bajra.",
+      "preventive_measure": "Use heat-tolerant hybrids."
+    },
+    "min_humidity": {
+      "value": 20,
+      "alert_message": "Humidity below 20% increases drought stress for bajra.",
+      "preventive_measure": "Ensure soil moisture retention with mulch."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can promote downy mildew in bajra.",
+      "preventive_measure": "Rotate crops and avoid waterlogging."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for bajra.",
+      "preventive_measure": "Irrigate especially after sowing."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can cause waterlogging in bajra fields.",
+      "preventive_measure": "Ensure rapid drainage."
+    },
+    "max_uv_index": {
+      "value": 13,
+      "alert_message": "UV index >13 may damage bajra foliage.",
+      "preventive_measure": "Use mulch to keep soil cool."
+    }
+  },
+  "Barley": {
+    "min_temperature": {
+      "value": 0,
+      "alert_message": "Temperature below 0 \u00b0C can kill barley seedlings.",
+      "preventive_measure": "Sow when risk of frost has passed."
+    },
+    "max_temperature": {
+      "value": 30,
+      "alert_message": "Temperature above 30 \u00b0C at grain fill causes yield loss in barley.",
+      "preventive_measure": "Harvest early or use heat-tolerant varieties."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% can dry barley leaves.",
+      "preventive_measure": "Ensure adequate moisture."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% promotes fungal disease in barley.",
+      "preventive_measure": "Provide ventilation."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for barley.",
+      "preventive_measure": "Irrigate before heading."
+    },
+    "max_rainfall": {
+      "value": 60,
+      "alert_message": "Rainfall >60 mm can cause waterlogging and rot in barley.",
+      "preventive_measure": "Use well-drained soils."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 can increase stress on barley.",
+      "preventive_measure": "Maintain plant health with proper nutrition."
+    }
+  },
+  "Tea": {
+    "min_temperature": {
+      "value": 13,
+      "alert_message": "Temperature below 13 \u00b0C slows tea growth.",
+      "preventive_measure": "Use shade and windbreaks in cool weather."
+    },
+    "max_temperature": {
+      "value": 32,
+      "alert_message": "Temperature above 32 \u00b0C is unfavourable for tea growth:contentReference[oaicite:11]{index=11}.",
+      "preventive_measure": "Use shade trees and mulching."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% can stress tea plants.",
+      "preventive_measure": "Keep soil moist and use shade."
+    },
+    "max_humidity": {
+      "value": 95,
+      "alert_message": "Humidity above 95% can cause fungal diseases in tea.",
+      "preventive_measure": "Ensure good drainage and spray fungicides."
+    },
+    "min_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall <50 mm/month can stress tea; it needs 150–250 cm/year:contentReference[oaicite:12]{index=12}.",
+      "preventive_measure": "Irrigate during dry spells."
+    },
+    "max_rainfall": {
+      "value": 200,
+      "alert_message": "Rainfall >200 mm can cause erosion in tea plantations.",
+      "preventive_measure": "Use terraces and mulches."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 may bleach tea leaves.",
+      "preventive_measure": "Grow in semi-shade."
+    }
+  },
+  "Coffee": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C can stunt coffee plant growth.",
+      "preventive_measure": "Protect from cold and frost."
+    },
+    "max_temperature": {
+      "value": 30,
+      "alert_message": "Temperature above 30 \u00b0C stresses coffee plants.",
+      "preventive_measure": "Maintain shade and irrigation."
+    },
+    "min_humidity": {
+      "value": 70,
+      "alert_message": "Humidity below 70% can dry coffee plants.",
+      "preventive_measure": "Avoid low humidity; use irrigation to maintain moisture."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% during harvest can mold coffee cherries.",
+      "preventive_measure": "Ensure good air flow; avoid delays in harvest."
+    },
+    "min_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall <50 mm/month may cause coffee drought stress.",
+      "preventive_measure": "Irrigate during dry months."
+    },
+    "max_rainfall": {
+      "value": 200,
+      "alert_message": "Rainfall >200 mm can waterlog coffee roots.",
+      "preventive_measure": "Ensure proper drainage."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can scorch coffee leaves.",
+      "preventive_measure": "Grow under shade trees."
+    }
+  },
+  "Mango": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C can stunt mango growth.",
+      "preventive_measure": "Provide frost protection during cold spells."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C can cause heat stress in mango.",
+      "preventive_measure": "Irrigate heavily and provide shade; trees can tolerate short spikes up to 48\u00b0C:contentReference[oaicite:13]{index=13}."
+    },
+    "min_humidity": {
+      "value": 30,
+      "alert_message": "Humidity below 30% may reduce mango fruit set.",
+      "preventive_measure": "Irrigate to compensate moisture loss."
+    },
+    "max_humidity": {
+      "value": 85,
+      "alert_message": "Humidity above 85% during flowering leads to fungal diseases (anthracnose) in mango:contentReference[oaicite:14]{index=14}.",
+      "preventive_measure": "Ensure dry conditions during flowering."
+    },
+    "min_rainfall": {
+      "value": 30,
+      "alert_message": "Rainfall <30 mm during flowering can hamper fruit set.",
+      "preventive_measure": "Apply light irrigation before flowering."
+    },
+    "max_rainfall": {
+      "value": 150,
+      "alert_message": "Rainfall >150 mm during flowering causes flower drop in mango:contentReference[oaicite:15]{index=15}.",
+      "preventive_measure": "Ensure drainage and avoid irrigation during bloom."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may sunscald mango fruits.",
+      "preventive_measure": "Use tree shade or covers on fruit."
+    }
+  },
+  "Grapes": {
+    "min_temperature": {
+      "value": 10,
+      "alert_message": "Temperature below 10 \u00b0C can slow grapevine growth.",
+      "preventive_measure": "Avoid pruning late to keep buds protected."
+    },
+    "max_temperature": {
+      "value": 38,
+      "alert_message": "Temperature above 38 \u00b0C can cause berry sunburn.",
+      "preventive_measure": "Use shade cloth or overhead sprinklers."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% can dry grapes and vines.",
+      "preventive_measure": "Ensure adequate soil moisture."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% encourages mildew in grapes.",
+      "preventive_measure": "Improve canopy ventilation and use fungicides."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for grapes.",
+      "preventive_measure": "Irrigate especially during berry set."
+    },
+    "max_rainfall": {
+      "value": 60,
+      "alert_message": "Rainfall >60 mm can cause fruit splitting and rot in grapes.",
+      "preventive_measure": "Ensure good drainage and avoid overhead irrigation."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 can sunburn grapes.",
+      "preventive_measure": "Use shade or protective sprays."
+    }
+  },
+  "Apple": {
+    "min_temperature": {
+      "value": 0,
+      "alert_message": "Temperature below 0 \u00b0C can kill apple flowers or young fruit.",
+      "preventive_measure": "Use frost protection (sprinklers, heaters) on cold nights."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C can cause fruit sunburn in apples.",
+      "preventive_measure": "Provide shade and adequate water."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% can stress apple trees.",
+      "preventive_measure": "Maintain irrigation to reduce drought stress."
+    },
+    "max_humidity": {
+      "value": 80,
+      "alert_message": "Humidity above 80% can lead to scab and rot in apples.",
+      "preventive_measure": "Ensure good air flow in orchard and apply fungicides."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may stress apple trees.",
+      "preventive_measure": "Irrigate during dry spells."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can cause rotting of apples.",
+      "preventive_measure": "Ensure orchard drainage and cover fruit pre-harvest."
+    },
+    "max_uv_index": {
+      "value": 9,
+      "alert_message": "UV index >9 can increase fruit sunburn in apples.",
+      "preventive_measure": "Use shade nets or anti-transpirants."
+    }
+  },
+  "Strawberry": {
+    "min_temperature": {
+      "value": 2,
+      "alert_message": "Temperature below 2 \u00b0C can damage strawberry buds.",
+      "preventive_measure": "Use covers or irrigation frost protection."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C causes berries to wilt.",
+      "preventive_measure": "Irrigate heavily and use shade cloth."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% can dry strawberry plants.",
+      "preventive_measure": "Maintain mulch and soil moisture."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% raises disease risk (gray mold) in strawberries.",
+      "preventive_measure": "Provide good air flow."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for strawberries.",
+      "preventive_measure": "Irrigate regularly during fruiting."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can cause berry rot.",
+      "preventive_measure": "Ensure drainage and cover fruit if raining."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can scorch strawberry leaves.",
+      "preventive_measure": "Use shade cloth."
+    }
+  },
+  "Papaya": {
+    "min_temperature": {
+      "value": 10,
+      "alert_message": "Temperature below 10 \u00b0C can slow papaya growth.",
+      "preventive_measure": "Avoid planting at high altitudes; use covers on cold nights."
+    },
+    "max_temperature": {
+      "value": 35,
+      "alert_message": "Temperature above 35 \u00b0C can cause heat stress in papaya.",
+      "preventive_measure": "Ensure adequate soil moisture:contentReference[oaicite:16]{index=16}."
+    },
+    "min_humidity": {
+      "value": 60,
+      "alert_message": "Humidity below 60% may limit papaya growth.",
+      "preventive_measure": "Irrigate to maintain humidity."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% with poor drainage causes root rot in papaya.",
+      "preventive_measure": "Ensure soil is well-drained."
+    },
+    "min_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall <50 mm may not meet papaya moisture needs.",
+      "preventive_measure": "Irrigate regularly:contentReference[oaicite:17]{index=17}."
+    },
+    "max_rainfall": {
+      "value": 200,
+      "alert_message": "Rainfall >200 mm can waterlog papaya and cause fruit drop.",
+      "preventive_measure": "Use raised beds."
+    },
+    "max_uv_index": {
+      "value": 11,
+      "alert_message": "UV index >11 may bleach papaya leaves.",
+      "preventive_measure": "Provide partial shade."
+    }
+  },
+  "Cauliflower": {
+    "min_temperature": {
+      "value": 10,
+      "alert_message": "Temperature below 10 \u00b0C slows cauliflower growth.",
+      "preventive_measure": "Mulch or cover seedlings."
+    },
+    "max_temperature": {
+      "value": 30,
+      "alert_message": "Temperature above 30 \u00b0C causes cauliflower curd to become loose.",
+      "preventive_measure": "Irrigate and use shade cloth."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% can cause cauliflower to bolt prematurely.",
+      "preventive_measure": "Maintain soil moisture."
+    },
+    "max_humidity": {
+      "value": 85,
+      "alert_message": "Humidity above 85% raises rot and disease risk in cauliflower.",
+      "preventive_measure": "Ensure air circulation."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may require irrigation for cauliflower.",
+      "preventive_measure": "Irrigate to maintain even soil moisture."
+    },
+    "max_rainfall": {
+      "value": 50,
+      "alert_message": "Rainfall >50 mm can waterlog cauliflower roots.",
+      "preventive_measure": "Ensure drainage."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can stress cauliflower plants.",
+      "preventive_measure": "Provide shade during peak sun."
+    }
+  },
+  "Cabbage": {
+    "min_temperature": {
+      "value": 5,
+      "alert_message": "Temperature below 5 \u00b0C can delay cabbage germination.",
+      "preventive_measure": "Plant after last frost and use row covers."
+    },
+    "max_temperature": {
+      "value": 30,
+      "alert_message": "Temperature above 30 \u00b0C can cause cabbage heads to split.",
+      "preventive_measure": "Harvest before heat and provide irrigation."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% may stress cabbage.",
+      "preventive_measure": "Maintain soil moisture."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% raises black rot risk in cabbage.",
+      "preventive_measure": "Ensure good soil drainage."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm may necessitate irrigation.",
+      "preventive_measure": "Irrigate regularly."
+    },
+    "max_rainfall": {
+      "value": 60,
+      "alert_message": "Rainfall >60 mm can cause waterlogging in cabbage fields.",
+      "preventive_measure": "Ensure raised beds."
+    },
+    "max_uv_index": {
+      "value": 8,
+      "alert_message": "UV index >8 can increase heat stress on cabbage.",
+      "preventive_measure": "Use shade cloth."
+    }
+  },
+  "Eggplant (Brinjal)": {
+    "min_temperature": {
+      "value": 15,
+      "alert_message": "Temperature below 15 \u00b0C slows brinjal growth.",
+      "preventive_measure": "Use plastic covers at night."
+    },
+    "max_temperature": {
+      "value": 40,
+      "alert_message": "Temperature above 40 \u00b0C can cause flower drop in brinjal.",
+      "preventive_measure": "Provide shade and irrigation."
+    },
+    "min_humidity": {
+      "value": 50,
+      "alert_message": "Humidity below 50% can stress eggplants.",
+      "preventive_measure": "Maintain irrigation."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% can lead to fungal diseases in eggplant.",
+      "preventive_measure": "Ensure good airflow."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm requires irrigation for eggplant.",
+      "preventive_measure": "Irrigate during flowering."
+    },
+    "max_rainfall": {
+      "value": 60,
+      "alert_message": "Rainfall >60 mm can cause root rot in eggplant.",
+      "preventive_measure": "Use raised beds and good drainage."
+    },
+    "max_uv_index": {
+      "value": 10,
+      "alert_message": "UV index >10 may scorch eggplant fruits.",
+      "preventive_measure": "Provide partial shade."
+    }
+  },
+  "Okra (Ladyfinger)": {
+    "min_temperature": {
+      "value": 18,
+      "alert_message": "Temperature below 18 \u00b0C slows okra germination.",
+      "preventive_measure": "Plant in warm season."
+    },
+    "max_temperature": {
+      "value": 45,
+      "alert_message": "Temperature above 45 \u00b0C causes severe heat stress in okra.",
+      "preventive_measure": "Mulch heavily and irrigate."
+    },
+    "min_humidity": {
+      "value": 40,
+      "alert_message": "Humidity below 40% may cause flower drop in okra.",
+      "preventive_measure": "Maintain soil moisture."
+    },
+    "max_humidity": {
+      "value": 90,
+      "alert_message": "Humidity above 90% increases fungal disease risk in okra.",
+      "preventive_measure": "Ensure ventilation."
+    },
+    "min_rainfall": {
+      "value": 10,
+      "alert_message": "Rainfall <10 mm requires irrigation for okra.",
+      "preventive_measure": "Irrigate after sowing."
+    },
+    "max_rainfall": {
+      "value": 100,
+      "alert_message": "Rainfall >100 mm can waterlog okra fields.",
+      "preventive_measure": "Ensure raised beds."
+    },
+    "max_uv_index": {
+      "value": 12,
+      "alert_message": "UV index >12 can scorch okra leaves.",
+      "preventive_measure": "Use shade cloth."
+    }
+  }
+}
