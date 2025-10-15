@@ -11,6 +11,8 @@ import uuid
 import shutil
 import tempfile
 import aiofiles
+from dotenv import load_dotenv
+import google.generativeai as genai
 
 # Note: Make sure the helper and model files are accessible.
 # If you run `uvicorn` from the project root, these imports should work.
@@ -47,8 +49,44 @@ class crop_recommendation_request(BaseModel):
     ph: float
     rainfall: float
 
-# --- API Router Definition ---
 
+load_dotenv()
+try:
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+except Exception as e:
+    print(f"Error configuring Gemini API: {e}")
+
+async def get_gemini_recommendation(crop: str, disease: str) -> str:
+    """
+    Generates treatment and prevention advice for a given crop disease using the Gemini API.
+    """
+    if not os.getenv("GOOGLE_API_KEY"):
+        return "Recommendation feature not configured. Missing API key."
+
+    if disease.lower() == 'healthy':
+        return f"The {crop} plant appears to be healthy. Continue good farming practices, including proper watering, nutrient management, and regular monitoring for any signs of stress or disease."
+
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    prompt = (
+        f"You are an agricultural expert. A farmer's {crop} crop is affected by '{disease}'. "
+        "Provide a concise recommendation that includes both preventive measures for the future and "
+        "immediate treatment options. The advice should be practical for a small-scale farmer. "
+        "Keep the total response between 70 and 80 words."
+    )
+    
+    try:
+        # Use generate_content_async for non-blocking API calls in an async context
+        response = await model.generate_content_async(prompt)
+        return response.text
+    except Exception as e:
+        print(f"Error calling Gemini API: {e}")
+        return "Could not generate a recommendation at this time. Please check the server logs."
+
+
+
+
+# --- API Router Definition ---
 # Create a router. The `tags` parameter groups all endpoints from this file
 # under a "Prediction Models" heading in the automatic API docs.
 router = APIRouter(
@@ -113,7 +151,8 @@ async def disease_prediction_endpoint(file: UploadFile = File(...)):
         parts = predicted_disease.split('___')
         crop = parts[0].replace(',_', ' ').replace('_', ' ')
         disease = parts[1].replace('_', ' ').strip()
-        return {'crop': crop, 'prediction': disease, 'recommendation': "Test"} # Placeholder recommendation
+        recommendation = await get_gemini_recommendation(crop, disease)
+        return {'crop': crop, 'prediction': disease, 'recommendation': recommendation} # Placeholder recommendation
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
     finally:
