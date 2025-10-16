@@ -1,7 +1,7 @@
 // page.tsx
 
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Upload, Loader2, AlertCircle, X, CircleCheckBig } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -45,25 +45,54 @@ const DiseasePrediction = () => {
     callAPI: callPredictionAPI,
   } = useAxios<PredictionResponse>();
 
+  const processImageFile = useCallback((file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File too large", {
+        description: "Please upload an image smaller than 5MB.",
+      });
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage(reader.result as string);
+      setPrediction(null);
+      setError(null);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File too large", {
-          description: "Please upload an image smaller than 5MB.",
-        });
-        return;
-      }
-
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-        setPrediction(null);
-      };
-      reader.readAsDataURL(file);
+      processImageFile(file);
     }
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            event.preventDefault();
+            processImageFile(file);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [processImageFile]);
 
   const handlePredict = async () => {
     if (!selectedImage) return;
@@ -242,7 +271,7 @@ const DiseasePrediction = () => {
                     <div className="text-center">
                       <Upload className="mx-auto h-12 w-12 text-muted-foreground transition-colors group-hover:text-green-700" />
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Click to upload or drag and drop
+                        Click to upload, drag and drop, or paste
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         PNG, JPG up to 5MB

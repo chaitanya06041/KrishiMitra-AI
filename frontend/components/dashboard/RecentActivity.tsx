@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { selectUserProfile } from "@/store/features/userSlice";
 import { createClient } from "@/lib/supabase/client";
 import ActivityLoader from "./ActivityLoader";
+import Link from "next/link";
 
 interface RecentActivityItem {
   history_id: string;
@@ -92,9 +93,9 @@ const RecentActivity = () => {
           <h3 className="text-lg font-semibold text-gray-900">
             Recent Predictions
           </h3>
-          <button className="text-sm text-green-600 hover:text-green-700 font-medium">
+          <Link href="/history" className="text-sm text-green-600 hover:text-green-700 font-medium">
             View All
-          </button>
+          </Link>
         </div>
         <div className="flex-grow flex items-center justify-center py-12">
           <div className="text-center text-gray-500">
@@ -112,9 +113,9 @@ const RecentActivity = () => {
         <h3 className="text-lg font-semibold text-gray-900">
           Recent Predictions
         </h3>
-        <button className="text-sm text-green-600 hover:text-green-700 font-medium">
+        <Link href="/history" className="text-sm text-green-600 hover:text-green-700 font-medium">
           View All
-        </button>
+        </Link>
       </div>
       <div className="space-y-4">
         {activities.map((activity) => (
