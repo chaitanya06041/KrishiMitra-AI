@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sprout, Bot, Image as ImageIcon, TrendingUp, MapPin, Sparkles } from 'lucide-react';
+import { Sprout, Bot, Image as ImageIcon, TrendingUp, MapPin, Sparkles, Cloudy } from 'lucide-react';
 import Login from '@/components/landing-page/Login';
 import Signup from '@/components/landing-page/Signup';
 import ProfileSetup from '@/components/landing-page/ProfileSetup';import { createClient } from '@/lib/supabase/client';
@@ -87,8 +87,23 @@ export default function LandingPage() {
     router.push('/dashboard');
   };
 
+  const handleLearnMore = () => {
+    const featuresSection = document.getElementById('features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={handleGetStarted}
+          className="bg-green-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-green-700 transition-all shadow-lg"
+        >
+          {isAuthenticated ? 'Dashboard' : 'Login'}
+        </button>
+      </div>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
@@ -147,7 +162,10 @@ export default function LandingPage() {
             >
               Get Started
             </button>
-            <button className="bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-green-600">
+            <button
+              onClick={handleLearnMore}
+              className="bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-green-600"
+            >
               Learn More
             </button>
           </div>
@@ -162,7 +180,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 px-6 relative overflow-hidden">
+      <section id="features" className="py-32 px-6 relative overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <div
             className="text-center mb-20 transition-all duration-1000"
@@ -282,12 +300,53 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* Feature 3 - Weather-Based Alerts */}
+          <div
+            className="mb-32 transition-all duration-1000"
+            style={{
+              opacity: scrollY > 1500 ? 1 : 0,
+              transform: `translateX(${scrollY > 1500 ? 0 : -100}px)`,
+            }}
+          >
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="order-2 md:order-1">
+                <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-12 rounded-3xl aspect-square flex items-center justify-center">
+                  <Cloudy className="w-32 h-32 text-yellow-600" strokeWidth={1.5} />
+                </div>
+              </div>
+              <div className="order-1 md:order-2">
+                <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                  <Cloudy className="w-4 h-4" />
+                  Proactive Weather Alerts
+                </div>
+                <h3 className="text-4xl font-bold mb-6">Weather-Based Alerts</h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Stay ahead of adverse weather conditions. Our system monitors weather patterns based on your location and crop type, sending timely email alerts to help you protect your harvest.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-gray-700">
+                    <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                    Real-time weather monitoring
+                  </li>
+                  <li className="flex items-center gap-3 text-gray-700">
+                    <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                    Crop-specific threat analysis
+                  </li>
+                  <li className="flex items-center gap-3 text-gray-700">
+                    <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                    Timely email notifications
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           {/* Feature 3 - Location-Based */}
           <div
             className="transition-all duration-1000"
             style={{
-              opacity: scrollY > 1500 ? 1 : 0,
-              transform: `translateY(${scrollY > 1500 ? 0 : 100}px)`,
+              opacity: scrollY > 2000 ? 1 : 0,
+              transform: `translateY(${scrollY > 2000 ? 0 : 100}px)`,
             }}
           >
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-12 md:p-16 rounded-3xl">
@@ -332,8 +391,8 @@ export default function LandingPage() {
       <section
         className="py-32 px-6 relative overflow-hidden"
         style={{
-          opacity: scrollY > 2000 ? 1 : 0,
-          transform: `translateY(${scrollY > 2000 ? 0 : 50}px)`,
+          opacity: scrollY > 2500 ? 1 : 0,
+          transform: `translateY(${scrollY > 2500 ? 0 : 50}px)`,
           transition: 'all 1s',
         }}
       >
