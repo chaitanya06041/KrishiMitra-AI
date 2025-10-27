@@ -4,7 +4,11 @@ import os
 from datetime import date
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from send_sms import initialize_twilio_client, send_twilio_sms
+
 load_dotenv()
+twilio_client = initialize_twilio_client()
+static_phone_number = os.getenv("MY_VERIFIED_PHONE_NUMBER")
 
 
 def run_alert_system():
@@ -31,6 +35,7 @@ def run_alert_system():
         location = user["location"]
         weather = weather_data.get(location)
         user_id = user["user_id"]
+        phone_number = static_phone_number
         if not weather:
             continue
         alerts = get_alerts(crop, weather, crop_rules)
@@ -38,9 +43,9 @@ def run_alert_system():
             message = f"Alert for your {crop} crop in {location}:\n\n"
             for msg, alert_msg, preventive_measure in alerts:
                 message += f"{msg}. {alert_msg} Preventive measure: {preventive_measure}\n"
-            send_email(user_id, user["email"], message, supabase)
+            send_notification(user_id, message, supabase, phone_number)
 
-def send_email(user_id, email, message, supabase: Client):
+def send_notification(user_id, message, supabase: Client, phone_number):
     try:
         data_to_insert = {
             "user_id": user_id,
@@ -49,11 +54,19 @@ def send_email(user_id, email, message, supabase: Client):
         response = supabase.table("notifications").insert(data_to_insert).execute()
         if len(response.data) > 0:
             print("✅ Successfully inserted notification:")
+
+        if twilio_client:
+            send_twilio_sms(twilio_client, phone_number, message)
+        else:
+            print("Error: Twilio client not initialized")
+            return
         
     except Exception as e: 
         print("Error inserting the notification", e)
         return
-    print("Alert message sent to", email)
+    
+
+    print("Alert message sent to", phone_number)
     print("Message: ", message)
     print('\n')
 
