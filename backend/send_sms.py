@@ -62,17 +62,17 @@ def send_twilio_sms(client: Client, to_number: str, message_body: str):
         print(f"Using provided Twilio client to send to {to_number}...")
         
         # Send the message using the provided client
-        # message = client.messages.create(
-        #     body=message_body,
-        #     from_=TWILIO_NUMBER,  # Your Twilio phone number
-        #     to=to_number          # The recipient's phone number
-        # )
+        message = client.messages.create(
+            body=message_body,
+            from_=TWILIO_NUMBER,  # Your Twilio phone number
+            to=to_number          # The recipient's phone number
+        )
         
-        # # Print the response
-        # print("Message successfully sent!")
-        # print(f"  SID: {message.sid}")
-        # print(f"  Status: {message.status}")
-        # return message.sid
+        # Print the response
+        print("Message successfully sent!")
+        print(f"  SID: {message.sid}")
+        print(f"  Status: {message.status}")
+        return message.sid
 
     except TwilioRestException as e:
         print("Error sending SMS via Twilio:")
@@ -111,11 +111,11 @@ if __name__ == "__main__":
             sys.exit(1)
             
         # 3. Call the send function as many times as you want
-        print("\n--- Sending Test Message 1 ---")
-        send_twilio_sms(my_twilio_client, MY_NUMBER, "Test message 1 for reusable client.")
+        # print("\n--- Sending Test Message 1 ---")
+        # send_twilio_sms(my_twilio_client, MY_NUMBER, "Test message 1 for reusable client.")
         
-        print("\n--- Sending Test Message 2 ---")
-        send_twilio_sms(my_twilio_client, MY_NUMBER, "Test message 2. See? No new client needed!")
+        # print("\n--- Sending Test Message 2 ---")
+        # send_twilio_sms(my_twilio_client, MY_NUMBER, "Test message 2. See? No new client needed!")
     
     else:
         print("Failed to initialize Twilio client. Exiting test.")
