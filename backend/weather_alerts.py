@@ -31,11 +31,12 @@ def run_alert_system():
     print(users_data)
     crop_rules = load_alerts_data()
     for user in users_data:
+        email = user["email"]
         crop = user["crop"]
         location = user["location"]
         weather = weather_data.get(location)
         user_id = user["user_id"]
-        phone_number = static_phone_number
+        phone_number = user["phone"]
         if not weather:
             continue
         alerts = get_alerts(crop, weather, crop_rules)
@@ -43,9 +44,9 @@ def run_alert_system():
             message = f"Alert for your {crop} crop in {location}:\n\n"
             for msg, alert_msg, preventive_measure in alerts:
                 message += f"{msg}. {alert_msg} Preventive measure: {preventive_measure}\n"
-            send_notification(user_id, message, supabase, phone_number)
+            send_notification(user_id, message, supabase, phone_number, email)
 
-def send_notification(user_id, message, supabase: Client, phone_number):
+def send_notification(user_id, message, supabase: Client, phone_number, email):
     try:
         data_to_insert = {
             "user_id": user_id,
@@ -53,26 +54,34 @@ def send_notification(user_id, message, supabase: Client, phone_number):
         }
         response = supabase.table("notifications").insert(data_to_insert).execute()
         if len(response.data) > 0:
-            print("✅ Successfully inserted notification:")
-
-        if twilio_client:
-            send_twilio_sms(twilio_client, phone_number, message)
-        else:
-            print("Error: Twilio client not initialized")
-            return
+            print("✅ Successfully inserted notification for:", email)
+        print("message: ", message)
+        if phone_number:
+            if twilio_client:
+                print("Sending SMS to", phone_number)
+                # send_twilio_sms(twilio_client, phone_number, message)
+            else:
+                print("Error: Twilio client not initialized")
+                return
         
+        elif email:
+            send_email(email, message)
+        else:
+            print("Could not get email or phone")
+
     except Exception as e: 
         print("Error inserting the notification", e)
         return
     
 
-    print("Alert message sent to", phone_number)
-    print("Message: ", message)
+def send_email(email, message):
+    print("Alert email message sent to", email)
     print('\n')
+
 
 def get_users_data(supabase: Client):
     profiles_res = supabase.table("profiles") \
-        .select("user_id, location, crop_planted") \
+        .select("user_id, location, crop_planted, phone") \
         .not_.is_("location", None) \
         .not_.is_("crop_planted", None) \
         .not_.is_("weather_alerts", False) \
@@ -90,7 +99,8 @@ def get_users_data(supabase: Client):
                 'user_id': user_id,
                 "email": email,
                 "location": profile["location"],
-                "crop": profile["crop_planted"]
+                "crop": profile["crop_planted"],
+                "phone": profile["phone"]
             })
     return merged_data
 

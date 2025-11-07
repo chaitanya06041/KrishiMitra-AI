@@ -44,6 +44,7 @@ export default function Signup({
         user_id: user.id,
         email: user.email!,
         location: null,
+        phone: null,
         crop_planted: null,
         weather_alerts: false,
         profile_image_url: null,

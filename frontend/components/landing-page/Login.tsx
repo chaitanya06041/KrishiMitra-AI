@@ -47,6 +47,7 @@ export default function Login({ onSuccess, onSwitchToSignup, onClose }: LoginPro
         user_id: user.id,
         email: user.email!, // user.email is guaranteed to exist if login is successful
         location: profileData.location,
+        phone: profileData.phone,
         crop_planted: profileData.crop_planted,
         weather_alerts: profileData.weather_alerts,
         profile_image_url: profileData.profile_image_url,

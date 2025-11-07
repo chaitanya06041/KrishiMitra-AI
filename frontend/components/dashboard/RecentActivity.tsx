@@ -100,7 +100,6 @@ const RecentActivity = () => {
         <div className="flex-grow flex items-center justify-center py-12">
           <div className="text-center text-gray-500">
             <p className="text-lg font-medium">No recent predictions yet.</p>
-            <p className="text-sm mt-1">Click here to get started</p>
           </div>
         </div>
         </div>

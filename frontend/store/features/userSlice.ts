@@ -9,6 +9,7 @@ export interface UserProfile {
   crop_planted: string | null;
   weather_alerts: boolean;
   profile_image_url: string | null;
+  phone: string | null;
 }
 
 // 2. Define the State for this Slice
